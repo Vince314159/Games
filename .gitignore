@@ -1,0 +1,8 @@
+# RIB data exports are local research inputs and should never be committed.
+*.csv
+*.xlsx
+*.xls
+exports/
+data/
+.DS_Store
+Thumbs.db
