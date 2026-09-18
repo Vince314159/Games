@@ -1,0 +1,2796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIB — Roblox Investment Banking</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="theme-color" content="#e53935">
+<style>
+:root{
+  --cream:#f4f0e7;
+  --paper:#fffdf8;
+  --ink:#0f1115;
+  --red:#e53935;
+  --blue:#2468ff;
+  --green:#2eb875;
+  --yellow:#ffd84d;
+  --muted:#6d7179;
+  --line:#d6d0c5;
+  --shadow:5px 5px 0 var(--ink);
+  --shadow-lg:9px 9px 0 var(--ink);
+  --display: Arial Black, Arial, Helvetica, sans-serif;
+  --sans: Arial, Helvetica, sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--cream);
+  color:var(--ink);
+  font-family:var(--sans);
+}
+button,select{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+
+@keyframes trailerPan {
+  0% {transform:scale(1.04) translate(0,0)}
+  30% {transform:scale(1.08) translate(-1.2%,-0.8%)}
+  65% {transform:scale(1.06) translate(1.1%,0.7%)}
+  100% {transform:scale(1.09) translate(-0.8%,0.8%)}
+}
+@keyframes trailerShine {
+  0% {transform:translateX(-135%) skewX(-18deg);opacity:0}
+  14% {opacity:.12}
+  40% {transform:translateX(135%) skewX(-18deg);opacity:0}
+  100% {opacity:0}
+}
+@keyframes badgePulse {
+  0%,100% {transform:scale(1)}
+  50% {transform:scale(1.06)}
+}
+
+.app{
+  display:grid;
+  grid-template-columns:220px minmax(0,1fr);
+  min-height:100vh;
+}
+.sidebar{
+  position:sticky;
+  top:0;
+  align-self:start;
+  height:100vh;
+  background:var(--red);
+  color:white;
+  padding:22px 18px;
+  border-right:3px solid var(--ink);
+  display:flex;
+  flex-direction:column;
+  z-index:30;
+}
+.logo{
+  display:flex;
+  gap:11px;
+  align-items:center;
+  margin-bottom:26px;
+}
+.logo-mark{
+  width:44px;
+  height:44px;
+  background:white;
+  color:var(--red);
+  border:3px solid var(--ink);
+  display:grid;
+  place-items:center;
+  font:900 23px var(--display);
+  transform:rotate(-4deg);
+}
+.logo strong{display:block;font:900 22px var(--display)}
+.logo span{display:block;margin-top:2px;font-size:7px;font-weight:900;letter-spacing:.16em}
+.nav-label{
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.16em;
+  opacity:.75;
+  margin:10px 8px 7px;
+}
+.nav-item{
+  width:100%;
+  background:transparent;
+  color:white;
+  border:2px solid transparent;
+  text-align:left;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:11px 10px;
+  margin:3px 0;
+  font-size:11px;
+  font-weight:900;
+}
+.nav-item:hover{background:rgba(255,255,255,.12)}
+.nav-item.active{
+  background:white;
+  color:var(--ink);
+  border-color:var(--ink);
+  box-shadow:4px 4px 0 var(--ink);
+}
+.nav-item small{font-size:8px;opacity:.68}
+.side-note{
+  margin-top:auto;
+  background:var(--blue);
+  color:white;
+  border:3px solid var(--ink);
+  box-shadow:4px 4px 0 var(--ink);
+  padding:12px;
+}
+.side-note strong{font:900 10px var(--display)}
+.side-note p{margin:6px 0 0;font-size:8px;line-height:1.46;font-weight:700}
+
+.main{min-width:0}
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:20;
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  padding:13px 20px;
+  background:rgba(255,253,248,.96);
+  border-bottom:3px solid var(--ink);
+}
+.page-title{font:900 15px var(--display)}
+.page-title span{
+  display:block;
+  margin-top:3px;
+  color:var(--muted);
+  font:800 8px var(--sans);
+  letter-spacing:.1em;
+}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{
+  border:2px solid var(--ink);
+  background:white;
+  color:var(--ink);
+  padding:8px 10px;
+  font-size:9px;
+  font-weight:900;
+  box-shadow:3px 3px 0 var(--ink);
+}
+.btn:hover{
+  transform:translate(1px,1px);
+  box-shadow:2px 2px 0 var(--ink);
+}
+.btn.red{background:var(--red);color:white}
+.btn.blue{background:var(--blue);color:white}
+.workspace{
+  max-width:1560px;
+  margin:0 auto;
+  padding:20px;
+}
+.view{display:none}
+.view.active{display:block}
+
+.kicker{
+  display:inline-block;
+  background:var(--red);
+  color:white;
+  border:2px solid var(--ink);
+  padding:5px 7px;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.1em;
+}
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  gap:12px;
+  margin:0 0 12px;
+}
+.section-head h2{
+  margin:7px 0 0;
+  font:900 26px/1 var(--display);
+  letter-spacing:-.035em;
+}
+.section-head p{
+  margin:0;
+  max-width:520px;
+  text-align:right;
+  color:var(--muted);
+  font-size:9px;
+  line-height:1.5;
+  font-weight:700;
+}
+
+.lift{
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.lift:hover{
+  transform:translate(-4px,-5px);
+  box-shadow:10px 10px 0 var(--ink) !important;
+}
+
+.image-surface{
+  position:relative;
+  overflow:hidden;
+}
+.image-surface .bg{
+  position:absolute;
+  inset:0;
+  background-position:center;
+  background-size:cover;
+  transform:scale(1.03);
+  filter:saturate(.95) contrast(1.02);
+  animation:trailerPan 16s ease-in-out infinite alternate;
+  transition:transform .3s ease, filter .3s ease;
+}
+.image-surface .wash{
+  position:absolute;
+  inset:0;
+}
+.image-surface>*:not(.bg):not(.wash){
+  position:relative;
+  z-index:2;
+}
+.image-surface:hover .bg{
+  transform:scale(1.0);
+  filter:saturate(1.06) contrast(1.05);
+}
+.image-surface::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:-18%;
+  width:20%;
+  background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.20), rgba(255,255,255,0));
+  animation:trailerShine 8.8s ease-in-out infinite;
+  pointer-events:none;
+}
+
+.banner{
+  display:grid;
+  grid-template-columns:minmax(0,1.16fr) minmax(320px,.84fr);
+  min-height:318px;
+  border:3px solid var(--ink);
+  box-shadow:var(--shadow-lg);
+  margin-bottom:16px;
+}
+.banner-copy{
+  background:var(--red);
+  color:white;
+  padding:27px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.banner-copy h1{
+  margin:16px 0 10px;
+  max-width:760px;
+  font:900 clamp(37px,5vw,68px)/.9 var(--display);
+  letter-spacing:-.06em;
+}
+.banner-copy p{
+  margin:0;
+  max-width:680px;
+  font-size:11px;
+  line-height:1.6;
+  font-weight:700;
+}
+.banner-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:18px;
+}
+.banner-media{min-height:318px}
+.banner-media .bg{background-image:url("https://cms-media.roblox.com/assets/d493e7b5-0639-4c7b-be1c-21c72f7a556b.png")}
+.banner-media .wash{background:rgba(36,104,255,.24)}
+.banner-stamp{
+  position:absolute;
+  top:16px;
+  right:16px;
+  background:white;
+  color:var(--ink);
+  border:3px solid var(--ink);
+  padding:8px 10px;
+  font:900 9px var(--display);
+  transform:rotate(2deg);
+  animation:badgePulse 1.6s ease-in-out infinite;
+}
+.banner-caption{
+  position:absolute;
+  left:20px;
+  right:20px;
+  bottom:18px;
+  color:white;
+  border-left:4px solid white;
+  padding-left:11px;
+  text-shadow:0 2px 8px rgba(0,0,0,.65);
+}
+.banner-caption strong{font:900 18px var(--display)}
+.banner-caption span{
+  display:block;
+  margin-top:5px;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+
+.ticker{
+  display:flex;
+  overflow-x:auto;
+  border:3px solid var(--ink);
+  box-shadow:var(--shadow);
+  background:white;
+  margin-bottom:18px;
+}
+.ticker::-webkit-scrollbar{display:none}
+.ticker-label{
+  flex:0 0 auto;
+  background:var(--blue);
+  color:white;
+  padding:10px 12px;
+  font-size:8px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.ticker-item{
+  flex:0 0 auto;
+  padding:10px 14px;
+  border-right:2px solid var(--ink);
+  font-size:8px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.up{color:#0b8f57}
+.down{color:#b51e1e}
+
+.visual-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:18px;
+}
+.visual-card{
+  min-height:185px;
+  border:3px solid var(--ink);
+  box-shadow:var(--shadow);
+  cursor:pointer;
+}
+.visual-card.red .wash{background:rgba(229,57,53,.80)}
+.visual-card.blue .wash{background:rgba(36,104,255,.77)}
+.visual-card.white .wash{background:rgba(255,253,248,.72)}
+.visual-card.green .wash{background:rgba(46,184,117,.76)}
+.visual-card[data-lens="market"] .bg{background-image:url("https://cms-media.roblox.com/assets/d493e7b5-0639-4c7b-be1c-21c72f7a556b.png")}
+.visual-card[data-lens="analyzer"] .bg{background-image:url("https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Home-Recommendation-Signals.png")}
+.visual-card[data-lens="research"] .bg{background-image:url("https://prod.docsiteassets.roblox.com/assets/landing/get-started/studio.png")}
+.visual-card[data-lens="compare"] .bg{background-image:url("https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Similar-Experiences.png")}
+.visual-copy{
+  min-height:185px;
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  color:white;
+}
+.visual-card.white .visual-copy{color:var(--ink)}
+.visual-num{
+  width:30px;
+  height:30px;
+  background:white;
+  color:var(--ink);
+  border:2px solid var(--ink);
+  display:grid;
+  place-items:center;
+  font:900 9px var(--display);
+}
+.visual-copy h3{margin:0;font:900 16px/1 var(--display)}
+.visual-copy small{font-size:7px;font-weight:900;letter-spacing:.08em}
+.visual-copy p{
+  margin:7px 0 0;
+  font-size:8px;
+  line-height:1.45;
+  font-weight:800;
+  opacity:0;
+  max-height:0;
+  overflow:hidden;
+  transition:opacity .2s ease, max-height .2s ease;
+}
+.visual-card:hover .visual-copy p{
+  opacity:1;
+  max-height:60px;
+}
+.visual-card::before{
+  content:"CLICK TO OPEN";
+  position:absolute;
+  right:8px;
+  bottom:8px;
+  background:white;
+  color:var(--ink);
+  border:2px solid var(--ink);
+  padding:4px 6px;
+  font-size:6px;
+  font-weight:900;
+  letter-spacing:.07em;
+  z-index:4;
+  opacity:0;
+  transform:translateY(4px);
+  transition:opacity .18s ease, transform .18s ease;
+}
+.visual-card:hover::before{opacity:1;transform:translateY(0)}
+
+.card{
+  background:var(--paper);
+  border:3px solid var(--ink);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.card-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:11px 13px;
+  border-bottom:3px solid var(--ink);
+  background:rgba(255,253,248,.92);
+}
+.card-title{font:900 12px var(--display)}
+.card-sub{margin-top:2px;font-size:7px;font-weight:900;color:var(--muted);letter-spacing:.08em}
+.home-grid{
+  display:grid;
+  grid-template-columns:minmax(620px,1.5fr) minmax(300px,.7fr);
+  gap:14px;
+  margin-bottom:16px;
+}
+.table-wrap{
+  overflow-x:auto;
+  max-height:410px;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+th{
+  background:#eee8dc;
+  border-bottom:2px solid var(--ink);
+  text-align:left;
+  padding:9px 10px;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+td{
+  padding:10px;
+  border-bottom:1px solid var(--line);
+  font-size:9px;
+  font-weight:700;
+}
+tbody tr{cursor:pointer;transition:background .15s}
+tbody tr:hover{background:#eef3ff}
+.num{text-align:right}
+.game-cell{
+  display:grid;
+  grid-template-columns:50px minmax(0,1fr);
+  gap:9px;
+  align-items:center;
+}
+.game-thumb{
+  width:50px;
+  height:34px;
+  border:2px solid var(--ink);
+  background:#ddd center/cover no-repeat;
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+tbody tr:hover .game-thumb{
+  transform:translate(-2px,-2px) scale(1.03);
+  box-shadow:4px 4px 0 var(--ink);
+}
+.game-name{font-weight:900}
+.game-sub{margin-top:2px;font-size:7px;color:var(--muted)}
+.score-pill,
+.decision{
+  display:inline-block;
+  background:white;
+  border:2px solid var(--ink);
+  padding:4px 6px;
+  font-size:8px;
+  font-weight:900;
+}
+.decision.buy{background:var(--green)}
+.decision.watch{background:var(--yellow)}
+.decision.avoid{background:#ff9f9b}
+.side-stack{display:grid;gap:14px}
+.image-block{
+  min-height:212px;
+  border:3px solid var(--ink);
+  box-shadow:var(--shadow);
+}
+.image-block.watch .bg{background-image:url("https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Home-Recommendation-Signals.png")}
+.image-block.ops .bg{background-image:url("https://prod.docsiteassets.roblox.com/assets/landing/get-started/studio.png")}
+.image-block.watch .wash{background:rgba(36,104,255,.80)}
+.image-block.ops .wash{background:rgba(229,57,53,.77)}
+.block-copy{
+  min-height:212px;
+  padding:14px;
+  color:white;
+}
+.block-copy h3{margin:0 0 10px;font:900 14px var(--display)}
+.block-copy p{margin:0;font-size:9px;line-height:1.55;font-weight:700}
+.watch-item{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:8px;
+  margin-top:7px;
+  background:rgba(255,255,255,.94);
+  color:var(--ink);
+  border:2px solid var(--ink);
+  padding:9px;
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+.watch-item:hover{
+  transform:translate(-3px,-3px);
+  box-shadow:5px 5px 0 var(--ink);
+}
+.watch-item strong{font-size:9px}
+.watch-item span{display:block;margin-top:2px;color:var(--muted);font-size:7px}
+.watch-item b{font:900 13px var(--display)}
+
+.select{
+  width:100%;
+  height:36px;
+  border:2px solid var(--ink);
+  background:white;
+  padding:0 10px;
+  font-size:9px;
+  font-weight:900;
+}
+
+.experience-preview{
+  min-height:255px;
+  margin-bottom:14px;
+  border:3px solid var(--ink);
+  box-shadow:var(--shadow-lg);
+  cursor:pointer;
+  background:#080b0d;
+}
+.preview-bg{
+  position:absolute;
+  inset:0;
+  background:center/cover no-repeat;
+  animation:trailerPan 16s ease-in-out infinite alternate;
+  transition:transform .28s ease, filter .28s ease;
+  transform:scale(1.03);
+}
+.experience-preview:hover .preview-bg{
+  transform:scale(1.0);
+  filter:saturate(1.05) contrast(1.05);
+}
+.preview-wash{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg, rgba(5,7,9,.94) 0%, rgba(7,10,12,.72) 47%, rgba(46,184,117,.38) 100%);
+}
+.preview-copy{
+  min-height:255px;
+  padding:20px;
+  color:white;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+}
+.preview-label{
+  width:max-content;
+  margin-bottom:9px;
+  padding:5px 7px;
+  background:white;
+  color:var(--ink);
+  border:2px solid var(--ink);
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.preview-copy h3{
+  margin:0;
+  max-width:640px;
+  font:900 29px/1 var(--display);
+  letter-spacing:-.035em;
+}
+.preview-copy p{
+  margin:8px 0 0;
+  max-width:620px;
+  font-size:9px;
+  line-height:1.55;
+  font-weight:700;
+}
+.preview-chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:12px;
+}
+.preview-chip{
+  background:rgba(255,255,255,.92);
+  color:var(--ink);
+  border:2px solid var(--ink);
+  padding:5px 7px;
+  font-size:7px;
+  font-weight:900;
+}
+.preview-open{
+  width:max-content;
+  margin-top:12px;
+  background:var(--green);
+  color:white;
+  border:2px solid var(--ink);
+  padding:8px 10px;
+  font-size:8px;
+  font-weight:900;
+  box-shadow:3px 3px 0 var(--ink);
+}
+
+.detail-grid{
+  display:grid;
+  grid-template-columns:235px 1fr 1fr;
+  gap:14px;
+}
+.score-card{
+  min-height:335px;
+  background:var(--red);
+  color:white;
+  border:3px solid var(--ink);
+  box-shadow:var(--shadow-lg);
+  padding:17px;
+  position:relative;
+  overflow:hidden;
+}
+.score-card .bg{
+  position:absolute;
+  inset:0;
+  background:url("https://cms-media.roblox.com/assets/d493e7b5-0639-4c7b-be1c-21c72f7a556b.png") center/cover no-repeat;
+  opacity:.22;
+  animation:trailerPan 16s ease-in-out infinite alternate;
+}
+.score-card .wash{
+  position:absolute;
+  inset:0;
+  background:rgba(229,57,53,.82);
+}
+.score-card>*:not(.bg):not(.wash){position:relative;z-index:2}
+.big-score{margin-top:34px;font:900 66px/1 var(--display)}
+.big-score small{font-size:15px}
+.score-card p{margin-top:16px;font-size:8px;line-height:1.55;font-weight:700}
+
+.panel-image .bg{opacity:.20}
+.panel-image .wash{background:rgba(255,253,248,.88)}
+.panel-image>*:not(.bg):not(.wash){position:relative;z-index:2}
+.break-card .bg{background-image:url("https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Home-Recommendation-Signals.png")}
+.thesis-card .bg{background-image:url("https://prod.docsiteassets.roblox.com/assets/landing/get-started/studio.png")}
+.facts-card .bg{background-image:url("https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Similar-Experiences.png")}
+.chart-card .bg{background-image:url("https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Home-Recommendation-Signals.png")}
+.shape-card .bg{background-image:url("https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Similar-Experiences.png")}
+
+.break-list{padding:12px}
+.break-row{
+  display:grid;
+  grid-template-columns:122px 1fr 34px;
+  gap:8px;
+  align-items:center;
+  padding:8px 0;
+}
+.break-row span{font-size:8px;font-weight:900}
+.bar{height:11px;background:white;border:2px solid var(--ink)}
+.fill{height:100%;background:var(--blue)}
+.break-num{text-align:right;font-size:8px;font-weight:900}
+
+.thesis-body{padding:13px}
+.thesis-section{padding:9px 0;border-bottom:1px solid var(--line)}
+.thesis-section:last-child{border-bottom:0}
+.thesis-label{margin-bottom:5px;font-size:7px;font-weight:900;letter-spacing:.09em}
+.thesis-section ul{margin:0;padding-left:15px;font-size:8px;line-height:1.6}
+.thesis-section p{margin:0;font-size:8px;line-height:1.55}
+
+.facts-card{grid-column:1 / span 3}
+.fact-grid{display:grid;grid-template-columns:repeat(6,1fr)}
+.fact{
+  padding:12px;
+  border-right:2px solid var(--ink);
+  background:rgba(255,253,248,.83);
+}
+.fact:last-child{border-right:0}
+.fact small{display:block;font-size:7px;font-weight:900;color:var(--muted)}
+.fact strong{display:block;margin-top:5px;font:900 13px var(--display)}
+
+.chart-card{grid-column:1 / span 2}
+.chart-wrap{padding:13px}
+.chart{
+  width:100%;
+  height:220px;
+  border:2px solid var(--ink);
+  background:rgba(255,249,233,.88);
+}
+.chart-grid{stroke:#d3cdc1;stroke-width:1}
+.chart-base{fill:none;stroke:var(--blue);stroke-width:2.2;stroke-dasharray:7 5}
+.chart-line{fill:none;stroke:var(--red);stroke-width:4}
+.chart-area{fill:rgba(229,57,53,.14)}
+.chart-point{fill:white;stroke:var(--red);stroke-width:3}
+.chart-tag{font-size:8px;font-weight:900;fill:var(--ink)}
+.chart-legend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  padding:0 13px 12px;
+}
+.chart-pill{
+  border:2px solid var(--ink);
+  background:white;
+  padding:5px 7px;
+  font-size:7px;
+  font-weight:900;
+}
+
+.shape-card{min-height:260px}
+.shape-wrap{
+  display:grid;
+  grid-template-columns:minmax(170px,228px) minmax(0,1fr);
+  gap:12px;
+  align-items:center;
+  padding:12px;
+}
+.radar{
+  width:100%;
+  max-width:220px;
+  justify-self:center;
+}
+.radar-grid{fill:none;stroke:#cec8bf;stroke-width:1.2}
+.radar-axis{stroke:#a6a198;stroke-width:1.2}
+.radar-fill{fill:rgba(36,104,255,.22);stroke:var(--blue);stroke-width:3}
+.radar-node{fill:var(--red);stroke:var(--ink);stroke-width:2}
+.radar-label{font-size:9px;font-weight:900;fill:var(--ink)}
+.shape-legend{display:grid;gap:6px}
+.legend-row{
+  display:grid;
+  grid-template-columns:74px 1fr 28px;
+  gap:8px;
+  align-items:center;
+}
+.legend-name{font-size:8px;font-weight:900}
+.legend-bar{height:11px;background:white;border:2px solid var(--ink)}
+.legend-fill{height:100%;background:var(--red)}
+.legend-num{text-align:right;font-size:8px;font-weight:900}
+
+.compare-hero,
+.pred-hero,
+.research-hero{
+  min-height:225px;
+  border:3px solid var(--ink);
+  box-shadow:var(--shadow-lg);
+  margin-bottom:14px;
+}
+.compare-hero .bg{background-image:url("https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Similar-Experiences.png")}
+.compare-hero .wash{background:rgba(36,104,255,.73)}
+.pred-hero .bg{background-image:url("https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Home-Recommendation-Signals.png")}
+.pred-hero .wash{background:rgba(229,57,53,.72)}
+.research-hero .bg{background-image:url("https://prod.docsiteassets.roblox.com/assets/landing/get-started/studio.png")}
+.research-hero .wash{background:rgba(36,104,255,.75)}
+.hero-copy{
+  min-height:225px;
+  padding:20px;
+  color:white;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+}
+.hero-copy h3{margin:0;font:900 28px var(--display)}
+.hero-copy p{margin:8px 0 0;max-width:620px;font-size:9px;line-height:1.55;font-weight:700}
+
+.compare-controls{
+  display:grid;
+  grid-template-columns:1fr 60px 1fr;
+  gap:10px;
+  align-items:center;
+  padding:12px;
+  margin-bottom:14px;
+}
+.vs{text-align:center;font:900 13px var(--display);color:var(--red)}
+.compare-table td:first-child{width:210px;color:var(--muted);font-size:7px;letter-spacing:.05em}
+.compare-note{
+  min-height:150px;
+  margin-top:14px;
+  border:3px solid var(--ink);
+  box-shadow:var(--shadow);
+}
+.compare-note .bg{background-image:url("https://cms-media.roblox.com/assets/d493e7b5-0639-4c7b-be1c-21c72f7a556b.png")}
+.compare-note .wash{background:rgba(229,57,53,.79)}
+.compare-note-copy{padding:15px;color:white;font-size:9px;line-height:1.6;font-weight:800}
+
+.metric-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:14px;
+}
+.metric{
+  min-height:155px;
+  border:3px solid var(--ink);
+  box-shadow:var(--shadow);
+  padding:14px;
+  position:relative;
+  overflow:hidden;
+}
+.metric .bg{
+  position:absolute;
+  inset:0;
+  background:center/cover no-repeat;
+  opacity:.22;
+  animation:trailerPan 16s ease-in-out infinite alternate;
+}
+.metric .wash{position:absolute;inset:0}
+.metric>*:not(.bg):not(.wash){position:relative;z-index:2}
+.metric.red{background:var(--red);color:white}
+.metric.red .wash{background:rgba(229,57,53,.81)}
+.metric.blue{background:var(--blue);color:white}
+.metric.blue .wash{background:rgba(36,104,255,.81)}
+.metric.green{background:var(--green);color:var(--ink)}
+.metric.green .wash{background:rgba(46,184,117,.79)}
+.metric.white{background:white;color:var(--ink)}
+.metric.white .wash{background:rgba(255,253,248,.78)}
+.metric:nth-child(1) .bg{background-image:url("https://prod.docsiteassets.roblox.com/assets/landing/get-started/studio.png")}
+.metric:nth-child(2) .bg{background-image:url("https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Similar-Experiences.png")}
+.metric:nth-child(3) .bg{background-image:url("https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Home-Recommendation-Signals.png")}
+.metric:nth-child(4) .bg{background-image:url("https://cms-media.roblox.com/assets/d493e7b5-0639-4c7b-be1c-21c72f7a556b.png")}
+.metric small{font-size:7px;font-weight:900;letter-spacing:.1em}
+.metric strong{display:block;margin-top:10px;font:900 29px var(--display)}
+
+.research-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+.research-grid .full{grid-column:1 / span 2}
+.list-body{padding:12px}
+.list-row{
+  display:grid;
+  grid-template-columns:36px 1fr auto;
+  gap:8px;
+  align-items:start;
+  padding:9px 0;
+  border-bottom:1px solid var(--line);
+}
+.list-row:last-child{border-bottom:0}
+.list-row strong{font-size:8px}
+.list-row p{margin:2px 0 0;font-size:8px;line-height:1.45}
+.status{
+  border:2px solid var(--ink);
+  background:white;
+  padding:4px 5px;
+  font-size:7px;
+  font-weight:900;
+}
+.status.priority{background:var(--yellow)}
+.status.good{background:var(--green)}
+
+.preview-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(15,17,21,.84);
+  display:none;
+  place-items:center;
+  padding:24px;
+  z-index:1000;
+}
+.preview-modal.open{display:grid}
+.preview-dialog{
+  width:min(1140px,96vw);
+  max-height:92vh;
+  overflow:auto;
+  background:var(--cream);
+  border:4px solid var(--ink);
+  box-shadow:14px 14px 0 rgba(0,0,0,.48);
+}
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:10px 12px;
+  background:var(--red);
+  color:white;
+  border-bottom:3px solid var(--ink);
+}
+.modal-head strong{font:900 12px var(--display)}
+.modal-close{
+  width:36px;
+  height:32px;
+  border:2px solid var(--ink);
+  background:white;
+  color:var(--ink);
+  font-size:18px;
+  font-weight:900;
+}
+.modal-main{
+  display:grid;
+  grid-template-columns:minmax(0,1.24fr) minmax(290px,.76fr);
+  min-height:430px;
+}
+.modal-art{
+  position:relative;
+  overflow:hidden;
+  min-height:430px;
+  border-right:3px solid var(--ink);
+  background:#222;
+}
+.modal-art-bg{
+  position:absolute;
+  inset:0;
+  background:center/cover no-repeat;
+  animation:trailerPan 16s ease-in-out infinite alternate;
+}
+.modal-art-wash{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg, rgba(15,17,21,.02), rgba(15,17,21,.75));
+}
+.modal-art-copy{
+  position:absolute;
+  left:18px;
+  right:18px;
+  bottom:18px;
+  color:white;
+  z-index:2;
+}
+.modal-art-copy .eyebrow{
+  display:inline-block;
+  background:var(--blue);
+  border:2px solid var(--ink);
+  padding:5px 7px;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.modal-art-copy h3{
+  margin:9px 0 5px;
+  font:900 31px/1 var(--display);
+  letter-spacing:-.04em;
+}
+.modal-art-copy p{
+  margin:0;
+  max-width:610px;
+  font-size:9px;
+  line-height:1.55;
+  font-weight:700;
+}
+.modal-side{
+  padding:17px;
+  background:var(--paper);
+}
+.modal-side h4{margin:0 0 7px;font:900 15px var(--display)}
+.modal-side > p{margin:0 0 13px;font-size:9px;line-height:1.55;color:var(--muted);font-weight:700}
+.modal-metrics{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-bottom:14px;
+}
+.modal-metric{
+  border:2px solid var(--ink);
+  background:white;
+  padding:8px;
+}
+.modal-metric small{
+  display:block;
+  font-size:6px;
+  font-weight:900;
+  color:var(--muted);
+  letter-spacing:.08em;
+}
+.modal-metric strong{
+  display:block;
+  margin-top:4px;
+  font:900 13px var(--display);
+}
+.reference-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin:14px 0 7px;
+}
+.reference-title{
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.09em;
+}
+.carousel-controls{
+  display:flex;
+  gap:6px;
+}
+.carousel-btn{
+  width:30px;
+  height:28px;
+  border:2px solid var(--ink);
+  background:white;
+  color:var(--ink);
+  font-size:15px;
+  font-weight:900;
+  box-shadow:2px 2px 0 var(--ink);
+}
+.carousel-btn:hover{
+  transform:translate(1px,1px);
+  box-shadow:1px 1px 0 var(--ink);
+}
+.reference-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+.reference-grid.carousel{
+  display:flex;
+  overflow-x:auto;
+  gap:8px;
+  padding-bottom:2px;
+  scroll-behavior:smooth;
+}
+.reference-grid.carousel::-webkit-scrollbar{display:none}
+.reference-grid.carousel .reference-tile{flex:0 0 166px}
+.reference-grid.studio{grid-template-columns:1fr}
+.reference-tile{
+  border:2px solid var(--ink);
+  background:white;
+  padding:0;
+  overflow:hidden;
+  text-align:left;
+  transition:transform .17s ease, box-shadow .17s ease, border-color .17s ease;
+}
+.reference-tile:hover{
+  transform:translate(-2px,-2px);
+  box-shadow:4px 4px 0 var(--ink);
+}
+.reference-tile.active{
+  transform:translate(-2px,-2px);
+  box-shadow:4px 4px 0 var(--ink);
+  border-color:var(--blue);
+}
+.reference-img{
+  height:78px;
+  border-bottom:2px solid var(--ink);
+  background:#ddd center/cover no-repeat;
+}
+.reference-tile strong{
+  display:block;
+  padding:6px 6px 2px;
+  font-size:8px;
+}
+.reference-tile span{
+  display:block;
+  padding:0 6px 4px;
+  color:var(--muted);
+  font-size:6px;
+  font-weight:800;
+}
+.reference-note{
+  display:block;
+  padding:0 6px 8px;
+  color:var(--ink);
+  font-size:6px;
+  line-height:1.35;
+  font-weight:700;
+}
+.studio-mini{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:10px;
+}
+.studio-chip{
+  border:2px solid var(--ink);
+  background:rgba(255,255,255,.94);
+  color:var(--ink);
+  padding:5px 7px;
+  font-size:7px;
+  font-weight:900;
+}
+.modal-foot{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:10px 12px;
+  border-top:3px solid var(--ink);
+  background:white;
+}
+.modal-foot small{
+  font-size:7px;
+  font-weight:800;
+  color:var(--muted);
+}
+.modal-go{
+  border:2px solid var(--ink);
+  background:var(--blue);
+  color:white;
+  padding:8px 10px;
+  font-size:8px;
+  font-weight:900;
+  box-shadow:3px 3px 0 var(--ink);
+}
+
+@media(max-width:1120px){
+  .app{grid-template-columns:188px minmax(0,1fr)}
+  .banner{grid-template-columns:1fr}
+  .banner-media{min-height:230px}
+  .visual-grid{grid-template-columns:1fr 1fr}
+  .home-grid{grid-template-columns:1fr}
+  .detail-grid{grid-template-columns:220px 1fr}
+  .facts-card,.chart-card{grid-column:1 / span 2}
+  .shape-card{grid-column:1 / span 2}
+  .metric-grid{grid-template-columns:1fr 1fr}
+  .modal-main{grid-template-columns:1fr}
+  .modal-art{border-right:0;border-bottom:3px solid var(--ink);min-height:350px}
+}
+@media(max-width:760px){
+  .app{display:block}
+  .sidebar{position:relative;height:auto;border-right:0;border-bottom:3px solid var(--ink)}
+  .nav-label{display:none}
+  .sidebar .nav-item{display:inline-flex;width:auto;margin-right:5px}
+  .side-note{margin-top:14px}
+  .topbar{position:relative}
+  .workspace{padding:12px}
+  .banner-copy h1{font-size:40px}
+  .visual-grid,.metric-grid,.research-grid{grid-template-columns:1fr}
+  .research-grid .full{grid-column:auto}
+  .detail-grid{grid-template-columns:1fr}
+  .facts-card,.chart-card,.shape-card{grid-column:auto}
+  .fact-grid{grid-template-columns:1fr 1fr 1fr}
+  .section-head{display:block}
+  .section-head p{text-align:left;margin-top:8px}
+  .compare-controls{grid-template-columns:1fr}
+  .vs{padding:4px 0}
+  .reference-grid{grid-template-columns:1fr 1fr}
+  .shape-wrap{grid-template-columns:1fr}
+}
+
+/* --- upgraded modal content --- */
+.reference-grid.market-cards{
+  display:flex;
+  overflow-x:auto;
+  gap:10px;
+  padding-bottom:2px;
+  scroll-behavior:smooth;
+}
+.reference-grid.market-cards::-webkit-scrollbar{display:none}
+.reference-grid.market-cards .reference-tile{
+  flex:0 0 176px;
+}
+.reference-tile .tag-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+  padding:0 6px 8px;
+}
+.ref-tag{
+  border:1px solid var(--ink);
+  background:#f0ede5;
+  padding:2px 4px;
+  font-size:5px;
+  font-weight:900;
+  letter-spacing:.04em;
+}
+.reference-grid.signal-board{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:9px;
+}
+.signal-card{
+  border:2px solid var(--ink);
+  background:white;
+  overflow:hidden;
+}
+.signal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border-bottom:2px solid var(--ink);
+  background:#f5f1e8;
+}
+.signal-head strong{
+  font-size:8px;
+  letter-spacing:.03em;
+}
+.signal-head span{
+  font-size:6px;
+  font-weight:900;
+  color:var(--muted);
+  letter-spacing:.08em;
+}
+.signal-body{
+  padding:10px;
+}
+.signal-body svg{
+  width:100%;
+  height:158px;
+  display:block;
+  border:2px solid var(--ink);
+  background:rgba(255,249,233,.82);
+}
+.sgrid{stroke:#ddd7ca;stroke-width:1}
+.sline-red{fill:none;stroke:var(--red);stroke-width:4}
+.sline-blue{fill:none;stroke:var(--blue);stroke-width:4}
+.sarea-red{fill:rgba(229,57,53,.13)}
+.spoint-red{fill:white;stroke:var(--red);stroke-width:3}
+.spoint-blue{fill:white;stroke:var(--blue);stroke-width:3}
+.sbar{fill:var(--blue);stroke:var(--ink);stroke-width:2}
+.slabel{font-size:8px;font-weight:900;fill:var(--ink)}
+.ssmall{font-size:7px;font-weight:900;fill:var(--muted)}
+.signal-note{
+  margin-top:8px;
+  font-size:7px;
+  line-height:1.45;
+  color:var(--muted);
+  font-weight:800;
+}
+.reference-grid.studio-mix{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.reference-grid.studio-mix .reference-tile strong{
+  font-size:8px;
+}
+.reference-grid.studio-mix .reference-img{
+  height:88px;
+}
+@media(max-width:760px){
+  .reference-grid.studio-mix{
+    grid-template-columns:1fr;
+  }
+}
+
+
+
+/* --- Light / dark theme toggle --- */
+.theme-toggle{
+  height:34px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:0 9px 0 6px;
+  border:2px solid var(--ink);
+  background:white;
+  color:var(--ink);
+  box-shadow:3px 3px 0 var(--ink);
+  font-size:8px;
+  font-weight:900;
+}
+.theme-toggle:hover{
+  transform:translate(1px,1px);
+  box-shadow:2px 2px 0 var(--ink);
+}
+.theme-switch{
+  width:32px;
+  height:18px;
+  border:2px solid var(--ink);
+  background:#e9e3d7;
+  padding:2px;
+  display:flex;
+  align-items:center;
+}
+.theme-knob{
+  width:10px;
+  height:10px;
+  background:var(--red);
+  border:1px solid var(--ink);
+  transform:translateX(0);
+  transition:transform .2s ease,background .2s ease;
+}
+body.dark{
+  --cream:#0d0f13;
+  --paper:#171a20;
+  --ink:#f3efe7;
+  --muted:#9ba2ad;
+  --line:#353a43;
+  --shadow:5px 5px 0 #000;
+  --shadow-lg:9px 9px 0 #000;
+  background:#0d0f13;
+  color:#f3efe7;
+}
+body.dark .topbar{
+  background:rgba(17,20,25,.97);
+}
+body.dark .page-title span,
+body.dark .section-head p,
+body.dark .card-sub,
+body.dark .game-sub,
+body.dark .watch-item span,
+body.dark .modal-side > p,
+body.dark .signal-note,
+body.dark .list-row p,
+body.dark .reference-tile span,
+body.dark .modal-foot small{
+  color:#aeb4bd;
+}
+body.dark .card,
+body.dark .modal-dialog,
+body.dark .modal-side{
+  background:#171a20;
+}
+body.dark .card-head,
+body.dark th,
+body.dark .signal-head{
+  background:#21252c;
+  color:#f3efe7;
+}
+body.dark td{
+  border-bottom-color:#343942;
+}
+body.dark tbody tr:hover{
+  background:#202936;
+}
+body.dark .btn,
+body.dark .select,
+body.dark .theme-toggle,
+body.dark .score-pill,
+body.dark .preview-label,
+body.dark .preview-chip,
+body.dark .chart-pill,
+body.dark .modal-metric,
+body.dark .reference-tile,
+body.dark .carousel-btn,
+body.dark .status{
+  background:#101319;
+  color:#f3efe7;
+  border-color:#f3efe7;
+  box-shadow:3px 3px 0 #000;
+}
+body.dark .btn.red{background:var(--red);color:white}
+body.dark .btn.blue{background:var(--blue);color:white}
+body.dark .select option{
+  background:#171a20;
+  color:#f3efe7;
+}
+body.dark .theme-switch{
+  background:#282d35;
+  border-color:#f3efe7;
+}
+body.dark .theme-knob{
+  background:var(--green);
+  border-color:#f3efe7;
+  transform:translateX(14px);
+}
+body.dark .watch-item{
+  background:rgba(18,21,27,.94);
+  color:#f3efe7;
+  border-color:#f3efe7;
+  box-shadow:2px 2px 0 #000;
+}
+body.dark .fact{
+  background:rgba(22,26,32,.90);
+}
+body.dark .fact small{
+  color:#aeb4bd;
+}
+body.dark .chart,
+body.dark .signal-body svg{
+  background:#12161b;
+}
+body.dark .chart-grid,
+body.dark .sgrid{
+  stroke:#323842;
+}
+body.dark .chart-tag,
+body.dark .slabel{
+  fill:#f3efe7;
+}
+body.dark .ssmall{
+  fill:#aeb4bd;
+}
+body.dark .radar-grid{
+  stroke:#424852;
+}
+body.dark .radar-axis{
+  stroke:#59606b;
+}
+body.dark .radar-label{
+  fill:#f3efe7;
+}
+body.dark .bar,
+body.dark .legend-bar{
+  background:#0d1015;
+  border-color:#f3efe7;
+}
+body.dark .visual-card.white .wash{
+  background:rgba(11,14,18,.78);
+}
+body.dark .visual-card.white .visual-copy{
+  color:#f3efe7;
+}
+body.dark .visual-num{
+  background:#101319;
+  color:#f3efe7;
+  border-color:#f3efe7;
+}
+body.dark .visual-card::before{
+  background:#101319;
+  color:#f3efe7;
+  border-color:#f3efe7;
+}
+body.dark .metric.white{
+  background:#171a20;
+  color:#f3efe7;
+}
+body.dark .metric.white .wash{
+  background:rgba(16,19,24,.82);
+}
+body.dark .reference-note{
+  color:#e7e1d8;
+}
+body.dark .ref-tag{
+  background:#22272f;
+  color:#f3efe7;
+  border-color:#f3efe7;
+}
+body.dark .studio-chip{
+  background:#15191f;
+  color:#f3efe7;
+  border-color:#f3efe7;
+}
+body.dark .modal-foot{
+  background:#12151a;
+}
+body.dark .signal-card{
+  background:#161a20;
+  color:#f3efe7;
+}
+body.dark .sidebar{
+  background:#b92b29;
+}
+body.dark .nav-item.active{
+  background:#11151a;
+  color:#f3efe7;
+  border-color:#f3efe7;
+  box-shadow:4px 4px 0 #000;
+}
+body.dark .side-note{
+  background:#1d55cf;
+}
+body.dark .experience-preview{
+  border-color:#f3efe7;
+}
+body.dark .preview-label,
+body.dark .preview-chip{
+  border-color:#f3efe7;
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">R</div>
+      <div>
+        <strong>RIB</strong>
+        <span>ROBLOX INVESTMENT BANKING</span>
+      </div>
+    </div>
+
+    <div class="nav-label">WORKSPACE</div>
+    <button class="nav-item active" data-view="market">Market <small>01</small></button>
+    <button class="nav-item" data-view="analyzer">Analyzer <small>02</small></button>
+    <button class="nav-item" data-view="compare">Compare <small>03</small></button>
+    <button class="nav-item" data-view="predictions">Predictions <small>04</small></button>
+    <button class="nav-item" data-view="research">Research <small>05</small></button>
+
+    <div class="side-note">
+      <strong>RIB DATA BUILD</strong>
+      <p id="dataStatus">No synthetic experience data is loaded. Import exported RIB Google Sheets CSV files to populate the dashboard.</p>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="page-title" id="pageTitle">Market Intelligence<span>RIB research prototype</span></div>
+      <div class="top-actions">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode">
+          <span class="theme-switch"><span class="theme-knob"></span></span>
+          <span id="themeLabel">Dark Mode</span>
+        </button>
+        <button class="btn" id="exportBtn" type="button">Export Snapshot</button>
+        <button class="btn red" id="refreshBtn" type="button">Load Sheet CSVs</button>
+        <input id="csvInput" type="file" accept=".csv,text/csv" multiple hidden>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <!-- MARKET -->
+      <section class="view active" id="marketView">
+        <section class="banner">
+          <div class="banner-copy">
+            <div>
+              <span class="kicker">ROBLOX EXPERIENCE INTELLIGENCE</span>
+              <h1>Treat games like businesses.<br>Find the edge early.</h1>
+              <p>RIB screens Roblox experiences across growth, engagement, market position, monetization, operations, opportunity, and risk—then shows which candidates deserve deeper diligence.</p>
+            </div>
+            <div class="banner-actions">
+              <button class="btn" type="button" data-view="analyzer">Open Analyzer</button>
+              <button class="btn blue" type="button" data-view="research">Research Logic</button>
+            </div>
+          </div>
+          <div class="banner-media image-surface lift">
+            <div class="bg" id="bannerBg"></div>
+            <div class="wash"></div>
+            <div class="banner-stamp" id="bannerStamp">RIB / DATA</div>
+            <div class="banner-caption">
+              <strong>Discovery is only the first layer.</strong>
+              <span>GROWTH · ENGAGEMENT · OPERATIONS · RISK</span>
+            </div>
+          </div>
+        </section>
+
+        <div class="ticker">
+          <div class="ticker-label">RIB TICKER</div>
+          <div id="tickerItems" style="display:contents">
+            <div class="ticker-item">NO DATA LOADED</div>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <span class="kicker">THE RIB LENSES</span>
+            <h2>How RIB reads the market</h2>
+          </div>
+          <p>Click a box to open a more visual experience. The market box shows breakout Roblox hits, and the Studio box shows creator-side context.</p>
+        </div>
+
+        <div class="visual-grid">
+          <article class="visual-card red image-surface lift" data-lens="market">
+            <div class="bg"></div><div class="wash"></div>
+            <div class="visual-copy">
+              <span class="visual-num">01</span>
+              <div>
+                <h3>Market Discovery</h3>
+                <small>BREAKOUT GAMES · EARLY OPPORTUNITY</small>
+                <p>Scroll through breakout Roblox experiences to show why early discovery matters.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="visual-card blue image-surface lift" data-lens="analyzer">
+            <div class="bg"></div><div class="wash"></div>
+            <div class="visual-copy">
+              <span class="visual-num">02</span>
+              <div>
+                <h3>Signal Analysis</h3>
+                <small>GROWTH + ENGAGEMENT + RISK</small>
+                <p>See how RIB turns separate indicators into an explainable screen.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="visual-card white image-surface lift" data-lens="research">
+            <div class="bg"></div><div class="wash"></div>
+            <div class="visual-copy">
+              <span class="visual-num">03</span>
+              <div>
+                <h3>Studio Reality</h3>
+                <small>CREATOR SIDE · BUILD + TEST</small>
+                <p>Open Roblox Studio-style context so the project feels tied to real game development.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="visual-card green image-surface lift" data-lens="compare">
+            <div class="bg"></div><div class="wash"></div>
+            <div class="visual-copy">
+              <span class="visual-num">04</span>
+              <div>
+                <h3>Competitive Context</h3>
+                <small>COMPARE → EXPLAIN → DECIDE</small>
+                <p>Compare candidates instead of trusting an isolated score.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <span class="kicker">CURRENT SCREEN</span>
+            <h2>Screen the market universe</h2>
+          </div>
+          <p>RIB is a prioritization system, not an automatic buy button. Click any row to open the Analyzer.</p>
+        </div>
+
+        <div class="home-grid">
+          <div class="card lift">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Experience Screener</div>
+                <div class="card-sub">CLICK ANY ROW FOR FULL ANALYSIS</div>
+              </div>
+              <button class="btn" id="sortScore" type="button">Sort RIB</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>EXPERIENCE</th>
+                    <th>GENRE</th>
+                    <th class="num">PLAYERS</th>
+                    <th class="num">30D</th>
+                    <th class="num">ENG.</th>
+                    <th class="num">RISK</th>
+                    <th class="num">RIB</th>
+                    <th>DECISION</th>
+                  </tr>
+                </thead>
+                <tbody id="marketRows"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="side-stack">
+            <div class="image-block watch image-surface lift">
+              <div class="bg"></div><div class="wash"></div>
+              <div class="block-copy">
+                <h3>Priority Watchlist</h3>
+                <div id="watchlist"></div>
+              </div>
+            </div>
+            <div class="image-block ops image-surface lift">
+              <div class="bg"></div><div class="wash"></div>
+              <div class="block-copy">
+                <h3>Operating Lens</h3>
+                <p>RIB does not stop at growth. Update cadence, development workload, and execution risk affect whether an experience is actually investable.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ANALYZER -->
+      <section class="view" id="analyzerView">
+        <div class="section-head">
+          <div>
+            <span class="kicker">EXPERIENCE ANALYZER</span>
+            <h2 id="detailTitle">No data loaded</h2>
+          </div>
+          <select class="select" id="gameSelect" aria-label="Select experience"></select>
+        </div>
+
+        <div class="experience-preview image-surface lift" id="experiencePreview" tabindex="0" role="button" aria-label="Open visual preview">
+          <div class="preview-bg" id="experiencePreviewBg"></div>
+          <div class="preview-wash"></div>
+          <div class="preview-copy">
+            <div class="preview-label" id="experiencePreviewLabel">RIB DATA · DATASET REQUIRED</div>
+            <h3 id="experiencePreviewTitle">No experience selected</h3>
+            <p id="experiencePreviewDesc">Load exported RIB Google Sheets CSV files to populate this analyzer with traceable project data.</p>
+            <div class="preview-chips" id="experiencePreviewChips"></div>
+            <button class="preview-open" type="button">OPEN VISUAL ↗</button>
+          </div>
+        </div>
+
+        <div class="detail-grid">
+          <div class="score-card lift">
+            <div class="bg"></div><div class="wash"></div>
+            <small id="scoreModelLabel" style="font-weight:900;letter-spacing:.1em">RIB SCORE · DATA</small>
+            <div class="big-score"><span id="detailScore">—</span><small>/100</small></div>
+            <span class="decision watch" id="detailDecision">UNSCORED</span>
+            <p>Public-data screening only. A full acquisition still requires financial, legal, ownership, and technical diligence.</p>
+          </div>
+
+          <div class="card panel-image break-card image-surface lift">
+            <div class="bg"></div><div class="wash"></div>
+            <div class="card-head">
+              <div>
+                <div class="card-title">Score Breakdown</div>
+                <div class="card-sub">CURRENT HYPOTHESIS MODEL</div>
+              </div>
+            </div>
+            <div class="break-list" id="breakdown"></div>
+          </div>
+
+          <div class="card panel-image thesis-card image-surface lift">
+            <div class="bg"></div><div class="wash"></div>
+            <div class="card-head">
+              <div>
+                <div class="card-title">Investment Thesis</div>
+                <div class="card-sub">EXPLAINABLE RATIONALE</div>
+              </div>
+            </div>
+            <div class="thesis-body">
+              <div class="thesis-section">
+                <div class="thesis-label">WHY IT SCORES</div>
+                <ul id="strengths"></ul>
+              </div>
+              <div class="thesis-section">
+                <div class="thesis-label">PRIMARY RISKS</div>
+                <ul id="risks"></ul>
+              </div>
+              <div class="thesis-section">
+                <div class="thesis-label">VALUE-CREATION ANGLE</div>
+                <p id="valueCreation"></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card panel-image facts-card image-surface lift">
+            <div class="bg"></div><div class="wash"></div>
+            <div class="fact-grid" id="facts"></div>
+          </div>
+
+          <div class="card panel-image chart-card image-surface lift">
+            <div class="bg"></div><div class="wash"></div>
+            <div class="card-head">
+              <div>
+                <div class="card-title">Player Trend</div>
+                <div class="card-sub">COLORED PERFORMANCE GRAPH</div>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <svg class="chart" viewBox="0 0 700 220" preserveAspectRatio="none">
+                <line class="chart-grid" x1="0" y1="44" x2="700" y2="44"></line>
+                <line class="chart-grid" x1="0" y1="88" x2="700" y2="88"></line>
+                <line class="chart-grid" x1="0" y1="132" x2="700" y2="132"></line>
+                <line class="chart-grid" x1="0" y1="176" x2="700" y2="176"></line>
+                <polyline class="chart-base" id="baseTrend" points="0,164 70,154 140,145 210,136 280,128 350,118 420,108 490,99 560,90 630,80 700,70"></polyline>
+                <polygon class="chart-area" id="trendArea"></polygon>
+                <polyline class="chart-line" id="mainTrend"></polyline>
+                <g id="trendNodes"></g>
+              </svg>
+            </div>
+            <div class="chart-legend">
+              <span class="chart-pill">RIB Trend</span>
+              <span class="chart-pill">Baseline</span>
+              <span class="chart-pill" id="trendLabel">Current pattern</span>
+            </div>
+          </div>
+
+          <div class="card panel-image shape-card image-surface lift">
+            <div class="bg"></div><div class="wash"></div>
+            <div class="card-head">
+              <div>
+                <div class="card-title">Factor Shape</div>
+                <div class="card-sub">COLORED PROFILE GRAPH</div>
+              </div>
+            </div>
+            <div class="shape-wrap">
+              <svg class="radar" viewBox="0 0 220 220" aria-label="RIB factor shape graph">
+                <polygon class="radar-grid" points="110,26 176,56 194,110 176,164 110,194 44,164 26,110 44,56"></polygon>
+                <polygon class="radar-grid" points="110,44 161,67 175,110 161,153 110,176 59,153 45,110 59,67"></polygon>
+                <polygon class="radar-grid" points="110,62 146,79 156,110 146,141 110,158 74,141 64,110 74,79"></polygon>
+                <polygon class="radar-grid" points="110,80 132,89 138,110 132,131 110,140 88,131 82,110 88,89"></polygon>
+                <line class="radar-axis" x1="110" y1="110" x2="110" y2="26"></line>
+                <line class="radar-axis" x1="110" y1="110" x2="176" y2="56"></line>
+                <line class="radar-axis" x1="110" y1="110" x2="194" y2="110"></line>
+                <line class="radar-axis" x1="110" y1="110" x2="176" y2="164"></line>
+                <line class="radar-axis" x1="110" y1="110" x2="110" y2="194"></line>
+                <line class="radar-axis" x1="110" y1="110" x2="44" y2="164"></line>
+                <line class="radar-axis" x1="110" y1="110" x2="26" y2="110"></line>
+                <line class="radar-axis" x1="110" y1="110" x2="44" y2="56"></line>
+                <text class="radar-label" x="100" y="16">Growth</text>
+                <text class="radar-label" x="170" y="50">Engage</text>
+                <text class="radar-label" x="198" y="114">Market</text>
+                <text class="radar-label" x="166" y="178">Money</text>
+                <text class="radar-label" x="98" y="209">Ops</text>
+                <text class="radar-label" x="18" y="178">Upside</text>
+                <text class="radar-label" x="2" y="114">Stable</text>
+                <text class="radar-label" x="25" y="50">Risk Fit</text>
+                <polygon class="radar-fill" id="radarFill"></polygon>
+                <g id="radarNodes"></g>
+              </svg>
+              <div class="shape-legend" id="shapeLegend"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMPARE -->
+      <section class="view" id="compareView">
+        <div class="section-head">
+          <div>
+            <span class="kicker">OPPORTUNITY COMPARISON</span>
+            <h2>Candidate Matchup</h2>
+          </div>
+          <p>Compare opportunities side-by-side under the same framework.</p>
+        </div>
+
+        <div class="compare-hero image-surface lift">
+          <div class="bg"></div><div class="wash"></div>
+          <div class="hero-copy">
+            <h3>Context beats isolated scores.</h3>
+            <p>RIB compares growth, engagement, risk, monetization, operations, and opportunity so a judge can see why one candidate is stronger than another.</p>
+          </div>
+        </div>
+
+        <div class="card compare-controls lift">
+          <select class="select" id="compareA"></select>
+          <div class="vs">VS</div>
+          <select class="select" id="compareB"></select>
+        </div>
+
+        <div class="card lift">
+          <div class="table-wrap">
+            <table class="compare-table" id="compareTable"></table>
+          </div>
+        </div>
+
+        <div class="compare-note image-surface lift">
+          <div class="bg"></div><div class="wash"></div>
+          <div class="compare-note-copy" id="compareVerdict"></div>
+        </div>
+      </section>
+
+      <!-- PREDICTIONS -->
+      <section class="view" id="predictionsView">
+        <div class="section-head">
+          <div>
+            <span class="kicker">VALIDATION</span>
+            <h2>Prediction Ledger</h2>
+          </div>
+          <p>Predictions stay frozen after outcomes become known so RIB cannot cherry-pick wins.</p>
+        </div>
+
+        <div class="pred-hero image-surface lift">
+          <div class="bg"></div><div class="wash"></div>
+          <div class="hero-copy">
+            <h3>Prediction without a track record is just a claim.</h3>
+            <p>RIB logs predictions before outcomes, then compares them against simple baselines. That is what starts to make the project testable.</p>
+          </div>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric red lift"><div class="bg"></div><div class="wash"></div><small>LOCKED</small><strong id="lockedCount">0</strong><span style="font-size:8px;font-weight:700">imported ledger</span></div>
+          <div class="metric blue lift"><div class="bg"></div><div class="wash"></div><small>RESOLVED</small><strong id="resolvedCount">0</strong><span style="font-size:8px;font-weight:700">with outcome data</span></div>
+          <div class="metric green lift"><div class="bg"></div><div class="wash"></div><small>RIB ACCURACY</small><strong id="accuracyValue">—</strong><span style="font-size:8px;font-weight:700">only when classifiable</span></div>
+          <div class="metric white lift"><div class="bg"></div><div class="wash"></div><small>BASELINE</small><strong id="baselineValue">—</strong><span style="font-size:8px;font-weight:700">no inferred result</span></div>
+        </div>
+
+        <div class="card lift">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>LOCKED</th>
+                  <th>EXPERIENCE</th>
+                  <th>HORIZON</th>
+                  <th>PREDICTION</th>
+                  <th>OUTCOME</th>
+                  <th>STATUS</th>
+                </tr>
+              </thead>
+              <tbody id="predRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- RESEARCH -->
+      <section class="view" id="researchView">
+        <div class="section-head">
+          <div>
+            <span class="kicker">RESEARCH CONTROL</span>
+            <h2>Evidence Before Confidence</h2>
+          </div>
+          <p>Keep assumptions, model changes, and proof requirements visible instead of hiding them behind a polished score.</p>
+        </div>
+
+        <div class="research-hero image-surface lift">
+          <div class="bg"></div><div class="wash"></div>
+          <div class="hero-copy">
+            <h3>The model is allowed to be wrong.</h3>
+            <p>RIB becomes stronger when evidence forces a change. The research page records what we believed, what failed, and why the model evolved.</p>
+          </div>
+        </div>
+
+        <div class="research-grid">
+          <div class="card image-surface panel-image lift">
+            <div class="bg" style="background-image:url('https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Home-Recommendation-Signals.png')"></div>
+            <div class="wash"></div>
+            <div class="card-head">
+              <div>
+                <div class="card-title">Hypothesis Register</div>
+                <div class="card-sub">WHAT RIB MUST TEST</div>
+              </div>
+            </div>
+            <div class="list-body">
+              <div class="list-row"><strong>H1</strong><p>High engagement relative to size predicts stronger subsequent growth.</p><span class="status">OPEN</span></div>
+              <div class="list-row"><strong>H2</strong><p>Growth acceleration predicts performance better than raw player count alone.</p><span class="status">OPEN</span></div>
+              <div class="list-row"><strong>H8</strong><p>RIB outperforms a simple one-metric ranking in future prediction.</p><span class="status priority">PRIORITY</span></div>
+            </div>
+          </div>
+
+          <div class="card image-surface panel-image lift">
+            <div class="bg" style="background-image:url('https://prod.docsiteassets.roblox.com/assets/landing/get-started/studio.png')"></div>
+            <div class="wash"></div>
+            <div class="card-head">
+              <div>
+                <div class="card-title">Model Change Log</div>
+                <div class="card-sub">EVIDENCE-DRIVEN ITERATION</div>
+              </div>
+            </div>
+            <div class="list-body">
+              <div class="list-row"><strong>v0.1</strong><p>Initial hypothesis model. Weights exist before validation and should be challenged.</p><span class="status">DAY 1</span></div>
+              <div class="list-row"><strong>v0.2</strong><p>Reserved for the first evidence-driven update after benchmark testing.</p><span class="status">OPEN</span></div>
+              <div class="list-row"><strong>v0.3</strong><p>Future live testing pass. Record why every change happened.</p><span class="status">LATER</span></div>
+            </div>
+          </div>
+
+          <div class="card image-surface panel-image lift full">
+            <div class="bg" style="background-image:url('https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Similar-Experiences.png')"></div>
+            <div class="wash"></div>
+            <div class="card-head">
+              <div>
+                <div class="card-title">Evidence Matrix</div>
+                <div class="card-sub">CLAIM → EVIDENCE → METHOD</div>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>CLAIM</th>
+                    <th>EVIDENCE NEEDED</th>
+                    <th>METHOD</th>
+                    <th>STATUS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>RIB beats simple rankings</td><td>Historical + live outcomes</td><td>Backtest / benchmark</td><td><span class="status priority">PRIORITY</span></td></tr>
+                  <tr><td>Public screening adds value</td><td>Candidate ranking performance</td><td>Dataset analysis</td><td><span class="status">OPEN</span></td></tr>
+                  <tr><td>Operational risk matters</td><td>Buyer + developer evidence</td><td>Primary research</td><td><span class="status">OPEN</span></td></tr>
+                  <tr><td>Customer problem is real</td><td>Buyer/operator evidence</td><td>Interviews</td><td><span class="status good">STARTED</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="preview-modal" id="previewModal" aria-hidden="true">
+  <div class="preview-dialog" role="dialog" aria-modal="true" aria-labelledby="modalVisualTitle">
+    <div class="modal-head">
+      <strong>RIB EXPERIENCE VIEW</strong>
+      <button class="modal-close" id="modalClose" type="button" aria-label="Close preview">×</button>
+    </div>
+
+    <div class="modal-main">
+      <div class="modal-art">
+        <div class="modal-art-bg" id="modalArtBg"></div>
+        <div class="modal-art-wash"></div>
+        <div class="modal-art-copy">
+          <span class="eyebrow" id="modalEyebrow">VISUAL REFERENCE</span>
+          <h3 id="modalVisualTitle">Experience</h3>
+          <p id="modalVisualDesc"></p>
+        </div>
+      </div>
+
+      <aside class="modal-side">
+        <h4 id="modalSideTitle">RIB Context</h4>
+        <p id="modalSideText">Visual context helps keep the analysis tied to an actual game product rather than abstract numbers.</p>
+        <div class="modal-metrics" id="modalMetrics"></div>
+
+        <div class="reference-row">
+          <div class="reference-title" id="referenceTitle">REAL ROBLOX VISUAL REFERENCES</div>
+          <div class="carousel-controls">
+            <button class="carousel-btn" id="refPrev" type="button" aria-label="Scroll left">‹</button>
+            <button class="carousel-btn" id="refNext" type="button" aria-label="Scroll right">›</button>
+          </div>
+        </div>
+
+        <div class="reference-grid" id="referenceGrid"></div>
+      </aside>
+    </div>
+
+    <div class="modal-foot">
+      <small>Reference thumbnails provide visual context only; imported RIB metrics remain tied to the project data records.</small>
+      <button class="modal-go" id="modalGo" type="button">OPEN RIB SECTION</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+const themeToggle = document.getElementById("themeToggle");
+const themeLabel = document.getElementById("themeLabel");
+function applyTheme(theme){
+  const dark = theme === "dark";
+  document.body.classList.toggle("dark", dark);
+  themeLabel.textContent = dark ? "Light Mode" : "Dark Mode";
+  themeToggle.setAttribute("aria-pressed", dark ? "true" : "false");
+}
+const savedTheme = localStorage.getItem("rib-theme") || "light";
+applyTheme(savedTheme);
+themeToggle.addEventListener("click", () => {
+  const next = document.body.classList.contains("dark") ? "light" : "dark";
+  localStorage.setItem("rib-theme", next);
+  applyTheme(next);
+});
+
+const bannerSlides = [
+  "https://cms-media.roblox.com/assets/d493e7b5-0639-4c7b-be1c-21c72f7a556b.png",
+  "https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Home-Recommendation-Signals.png",
+  "https://prod.docsiteassets.roblox.com/assets/landing/get-started/studio.png",
+  "https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Similar-Experiences.png"
+];
+
+const ribData = {market:[], scores:[], signals:[], validation:[]};
+let games = [];
+let predictions = [];
+let importedAt = null;
+const STORAGE_KEY = 'rib-icdc-import-v2';
+
+function esc(v){
+  return String(v ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));
+}
+function num(v){
+  if(v === null || v === undefined) return null;
+  const s = String(v).trim();
+  if(!s || /^(n\/?a|unknown|pending|—|-)$/i.test(s)) return null;
+  const m = s.replace(/,/g,"").replace(/%/g,"").match(/-?\d+(?:\.\d+)?/);
+  return m ? Number(m[0]) : null;
+}
+function val(row, ...keys){
+  for(const k of keys){ if(row && Object.prototype.hasOwnProperty.call(row,k) && String(row[k] ?? "").trim() !== "") return row[k]; }
+  return "";
+}
+function fmtPct(v){
+  return Number.isFinite(v) ? `${v >= 0 ? "+" : ""}${v.toFixed(1)}%` : "—";
+}
+function fmtScore(v){
+  return Number.isFinite(v) ? (Number.isInteger(v) ? String(v) : v.toFixed(1)) : "—";
+}
+function parseCSV(text){
+  const rows=[]; let row=[], field="", quoted=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(quoted){
+      if(c === '"'){ if(text[i+1] === '"'){ field+='"'; i++; } else quoted=false; }
+      else field+=c;
+    } else {
+      if(c === '"') quoted=true;
+      else if(c === ","){ row.push(field); field=""; }
+      else if(c === "\n"){ row.push(field.replace(/\r$/,"")); rows.push(row); row=[]; field=""; }
+      else field+=c;
+    }
+  }
+  if(field.length || row.length){ row.push(field.replace(/\r$/,"")); rows.push(row); }
+  const headers=(rows.shift() || []).map(h=>h.replace(/^\uFEFF/,"").trim());
+  return rows.filter(r=>r.some(x=>String(x).trim())).map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i] ?? ""])));
+}function detectDataset(rows){
+  const h = new Set(Object.keys(rows[0] || {}));
+  if(h.has("Roblox URL") && h.has("CCU")) return "market";
+  if(h.has("LEGACY v1 RIB Score") || h.has("v2.4 Score Status")) return "scores";
+  if(h.has("Main Positive Signal") && h.has("Main Risk")) return "signals";
+  if(h.has("Prediction Date") && h.has("Original RIB Score")) return "validation";
+  return null;
+}
+function latestMap(rows,dateKey){
+  const m=new Map();
+  rows.forEach(r=>{
+    const name=String(val(r,"Game Name")).trim();
+    if(!name) return;
+    const cur=m.get(name), d=String(val(r,dateKey)).trim();
+    if(!cur || d >= String(val(cur,dateKey)).trim()) m.set(name,r);
+  });
+  return m;
+}
+function placeIdFromUrl(url){
+  const m=String(url || "").match(/\/games\/(\d+)/i);
+  return m ? m[1] : "";
+}
+function gameVisual(row){
+  const id=placeIdFromUrl(val(row,"Roblox URL"));
+  return id ? `https://www.roblox.com/asset-thumbnail/image?assetId=${id}&width=768&height=432&format=png` : bannerSlides[0];
+}
+function scoreMeta(s){
+  const p10=num(val(s,"Conservative Priority P10"));
+  const legacy=num(val(s,"LEGACY v1 RIB Score"));
+  const status=String(val(s,"v2.4 Score Status")).trim();
+  if(Number.isFinite(p10)) return {value:p10,label:"RIB v2.4 · CONSERVATIVE P10",kind:"v2.4"};
+  if(Number.isFinite(legacy)) return {value:legacy,label:`LEGACY v1 RIB · ${status || "PRELIMINARY"}`,kind:"legacy"};
+  return {value:null,label:status || "RIB v2.4 · UNSCORED",kind:"unscored"};
+}
+function decisionFrom(s){
+  const gate=String(val(s,"Recommendation / Gate","v2.4 Score Status")).toUpperCase();
+  if(gate.includes("DILIGENCE") || gate.includes("INVESTIGATE")) return "INVESTIGATE";
+  if(gate.includes("WATCH")) return "WATCH";
+  if(gate.includes("AVOID") || gate.includes("LOW PRIORITY")) return "AVOID";
+  if(gate.includes("PRELIMINARY") || gate.includes("PROVISIONAL") || gate.includes("UNSCORED")) return "PRELIMINARY";
+  return "UNSCORED";
+}
+function buildGames(){
+  const market=latestMap(ribData.market,"Date"), scores=latestMap(ribData.scores,"Date"), signals=latestMap(ribData.signals,"Date");
+  const names=[...new Set([...market.keys(),...scores.keys(),...signals.keys()])];
+  games=names.map(name=>{
+    const m=market.get(name)||{}, s=scores.get(name)||{}, z=signals.get(name)||{}, sm=scoreMeta(s);
+    const riskQuality=num(val(s,"LEGACY v1 Risk Quality (0-100)"));
+    const breakdown={
+      Growth:num(val(s,"M — Market-Neutral Momentum","LEGACY v1 Growth Evidence Strength (0-100)")),
+      Engagement:num(val(s,"Q — Player Quality / Affinity","LEGACY v1 Engagement Quality (0-100)")),
+      "Market Position":num(val(s,"H — Hidden-Gem Gap","LEGACY v1 Competitive Position (0-100)")),
+      Monetization:num(val(s,"LEGACY v1 Monetization Public Proxy (0-100)")),
+      Operations:num(val(s,"LEGACY v1 Creator / Operations (0-100)")),
+      Opportunity:num(val(s,"Public Opportunity O")),
+      Stability:num(val(s,"S — Market-Neutral Stability"))
+    };
+    return {name,dev:String(val(m,"Creator / Owner")||"—"),genre:String(val(m,"Genre")||"—"),players:num(val(m,"CCU")),
+      growth:num(val(m,"30D Growth % (legacy/raw only — nested peaks are NOT growth)")),eng:breakdown.Engagement,
+      risk:Number.isFinite(riskQuality)?Math.max(0,100-riskQuality):null,riskQuality,score:sm.value,scoreLabel:sm.label,scoreKind:sm.kind,
+      decision:decisionFrom(s),visits:val(m,"Visits")||"—",favorites:val(m,"Favorites")||"—",updates:val(m,"Last Update")||"—",
+      monetization:Number.isFinite(breakdown.Monetization)?`Public proxy ${fmtScore(breakdown.Monetization)}`:"—",
+      visual:gameVisual(m),visualRef:"ROBLOX URL / IMPORTED DATA",url:val(m,"Roblox URL"),breakdown,
+      strengths:[val(z,"Main Positive Signal"),val(z,"Second Positive Signal")].filter(Boolean),
+      risks:[val(z,"Main Risk")].filter(Boolean),value:val(z,"Next Action")||val(s,"Reason / Notes")||"No next-action note imported.",
+      evidenceMaturity:val(s,"Evidence Maturity"),confidence:val(s,"Evidence Confidence"),eligibility:val(s,"Full RIB Eligibility"),
+      modelVersion:val(s,"Model Version")||"RIB DATA",scoreStatus:val(s,"v2.4 Score Status"),date:val(s,"Date")||val(m,"Date")};
+  });
+}function buildPredictions(){
+  predictions=ribData.validation.filter(r=>{
+    const p=String(val(r,"Prediction")).trim();
+    const n=String(val(r,"Game Name")).trim();
+    return n && p && !/^MODEL LOCK/i.test(n) && !/^METHODOLOGY LOCK/i.test(p) && !/^UNSCORED/i.test(p);
+  }).map(r=>{
+    const outcome90=val(r,"90D Growth"), outcome60=val(r,"60D Growth"), outcome30=val(r,"30D Growth");
+    const horizon=outcome90?"90D":outcome60?"60D":outcome30?"30D":(/90D/i.test(val(r,"Prediction"))?"90D":/60D/i.test(val(r,"Prediction"))?"60D":"30D");
+    const outcome=outcome90||outcome60||outcome30||val(r,"Breakout?")||"Pending";
+    const result=String(val(r,"Result Status","Status")).toUpperCase();
+    const resolved=!!(val(r,"Result Date") || outcome90 || outcome60 || outcome30 || val(r,"Breakout?"));
+    return [val(r,"Prediction Date")||"—",val(r,"Game Name")||"—",horizon,val(r,"Prediction")||"—",outcome,result|| (resolved?"RESOLVED":"OPEN")];
+  });
+}
+function saveRibState(){
+  try{ localStorage.setItem(STORAGE_KEY,JSON.stringify({ribData,importedAt})); }catch(e){}
+}
+function restoreRibState(){
+  try{
+    const x=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");
+    if(x && x.ribData){ Object.assign(ribData,x.ribData); importedAt=x.importedAt||null; buildGames(); buildPredictions(); return true; }
+  }catch(e){}
+  return false;
+}
+function updateDataStatus(){
+  const loaded=[];
+  if(ribData.market.length) loaded.push("Market Discovery");
+  if(ribData.scores.length) loaded.push("RIB Score");
+  if(ribData.signals.length) loaded.push("Signal Analysis");
+  if(ribData.validation.length) loaded.push("Validation");
+  dataStatus.textContent=loaded.length
+    ? `${games.length} real experience records loaded from ${loaded.join(", ")}. No synthetic game metrics are being used.`
+    : "No synthetic experience data is loaded. Import exported RIB Google Sheets CSV files to populate the dashboard.";
+}
+async function importCSVFiles(files){
+  const staged={};
+  const rejected=[];
+  for(const file of files){
+    const rows=parseCSV(await file.text());
+    const kind=detectDataset(rows);
+    if(!kind){ rejected.push(file.name); continue; }
+    staged[kind]=(staged[kind]||[]).concat(rows);
+  }
+  Object.entries(staged).forEach(([k,rows])=>ribData[k]=rows);
+  importedAt=new Date().toISOString();
+  buildGames(); buildPredictions(); saveRibState(); renderAll();
+  refreshBtn.textContent=Object.keys(staged).length?"Loaded":"No Match";
+  setTimeout(()=>refreshBtn.textContent="Load Sheet CSVs",1100);
+  if(rejected.length) dataStatus.textContent += ` Unrecognized file(s): ${rejected.join(", ")}.`;
+}
+function renderTicker(){
+  if(!games.length){ tickerItems.innerHTML='<div class="ticker-item">NO DATA LOADED</div>'; return; }
+  const items=games.slice().sort((a,b)=>(b.score??-Infinity)-(a.score??-Infinity)).slice(0,6);
+  tickerItems.innerHTML=items.map(g=>{
+    const metric=Number.isFinite(g.growth)?fmtPct(g.growth):(Number.isFinite(g.score)?`RIB ${fmtScore(g.score)}`:"UNSCORED");
+    const cls=Number.isFinite(g.growth)?(g.growth>=0?"up":"down"):"";
+    return `<div class="ticker-item">${esc(g.name)} <b class="${cls}">${esc(metric)}</b></div>`;
+  }).join("");
+}
+function renderAll(){
+  fillSelects(); renderMarket(); renderTicker(); renderPred(); updateDataStatus();
+  if(games.length){ renderDetail(gameSelect.value||games[0].name); if(games.length>1) renderCompare(); }
+  else renderDetail(null);
+}
+
+const breakoutShowcase = [
+  {
+    name:"Adopt Me!",
+    image:"https://www.roblox.com/asset-thumbnail/image?assetId=920587237&width=768&height=432&format=png",
+    type:"Mass-market social / pet game",
+    note:"One of the biggest long-running Roblox hits. It helps show what a top-tier experience can grow into.",
+    tags:["SOCIAL","LONG-RUN","TOP TIER"]
+  },
+  {
+    name:"Brookhaven RP",
+    image:"https://www.roblox.com/asset-thumbnail/image?assetId=4924922222&width=768&height=432&format=png",
+    type:"Roleplay phenomenon",
+    note:"A giant roleplay title that shows how wide audience appeal can scale on Roblox.",
+    tags:["ROLEPLAY","MASS APPEAL","STABLE"]
+  },
+  {
+    name:"Blox Fruits",
+    image:"https://www.roblox.com/asset-thumbnail/image?assetId=2753915549&width=768&height=432&format=png",
+    type:"Action RPG franchise",
+    note:"A breakout action game that became one of the most recognizable Roblox businesses.",
+    tags:["ACTION","FRANCHISE","MONETIZE"]
+  },
+  {
+    name:"Driving Empire",
+    image:"https://www.roblox.com/asset-thumbnail/image?assetId=3351674303&width=768&height=432&format=png",
+    type:"Driving / live-ops success",
+    note:"Useful for showing how updates, content drops, and repeat engagement can drive a game business.",
+    tags:["LIVE OPS","CARS","UPDATES"]
+  },
+  {
+    name:"Dress to Impress",
+    image:"https://www.roblox.com/asset-thumbnail/image?assetId=15101393044&width=768&height=432&format=png",
+    type:"Viral fashion hit",
+    note:"A strong example of how a simple loop can explode through culture and social sharing.",
+    tags:["VIRAL","FASHION","TREND"]
+  },
+  {
+    name:"Dragon Adventures",
+    image:"https://www.roblox.com/asset-thumbnail/image?assetId=3475397644&width=768&height=432&format=png",
+    type:"Fantasy collection / adventure",
+    note:"Shows the appeal of an experience with strong world-building and collectible progression.",
+    tags:["FANTASY","COLLECT","WORLD"]
+  }
+];
+
+const studioShowcase = [
+  {
+    name:"Build View",
+    image:"https://prod.docsiteassets.roblox.com/assets/landing/get-started/studio.png",
+    type:"Scene / building view",
+    note:"The build environment is where assets, terrain, models, and gameplay spaces come together."
+  },
+  {
+    name:"Discovery Signals",
+    image:"https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Home-Recommendation-Signals.png",
+    type:"Analytics view",
+    note:"A serious Roblox business also depends on understanding discovery signals and how players find the game."
+  },
+  {
+    name:"Similar Experiences",
+    image:"https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Similar-Experiences.png",
+    type:"Benchmarking view",
+    note:"Studying adjacent experiences helps developers learn what players expect and where a game can differentiate."
+  },
+  {
+    name:"Published Experience",
+    image:"https://cms-media.roblox.com/assets/d493e7b5-0639-4c7b-be1c-21c72f7a556b.png",
+    type:"Output / market-facing view",
+    note:"Studio work only matters if it turns into a game people actually discover, play, and return to."
+  }
+];
+
+const realReferences = [
+  {name:"Blox Fruits", image:"https://www.roblox.com/asset-thumbnail/image?assetId=2753915549&width=768&height=432&format=png", type:"RPG / Action", note:"Real Roblox reference image."},
+  {name:"Brookhaven RP", image:"https://www.roblox.com/asset-thumbnail/image?assetId=4924922222&width=768&height=432&format=png", type:"Roleplay", note:"Real Roblox reference image."},
+  {name:"Driving Empire", image:"https://www.roblox.com/asset-thumbnail/image?assetId=3351674303&width=768&height=432&format=png", type:"Driving / Racing", note:"Real Roblox reference image."},
+  {name:"Dragon Adventures", image:"https://www.roblox.com/asset-thumbnail/image?assetId=3475397644&width=768&height=432&format=png", type:"RPG / Exploration", note:"Real Roblox reference image."},
+  {name:"Notoriety", image:"https://www.roblox.com/asset-thumbnail/image?assetId=21532277&width=768&height=432&format=png", type:"Co-op / Action", note:"Real Roblox reference image."}
+];
+
+const titles = {
+  market:"Market Intelligence",
+  analyzer:"Experience Analyzer",
+  compare:"Opportunity Comparison",
+  predictions:"Prediction Ledger",
+  research:"Research Control"
+};
+
+const pageTitle = document.getElementById("pageTitle");
+const marketRows = document.getElementById("marketRows");
+const watchlist = document.getElementById("watchlist");
+const gameSelect = document.getElementById("gameSelect");
+const compareA = document.getElementById("compareA");
+const compareB = document.getElementById("compareB");
+const compareTable = document.getElementById("compareTable");
+const compareVerdict = document.getElementById("compareVerdict");
+const predRows = document.getElementById("predRows");
+const detailTitle = document.getElementById("detailTitle");
+const detailScore = document.getElementById("detailScore");
+const detailDecision = document.getElementById("detailDecision");
+const breakdown = document.getElementById("breakdown");
+const strengths = document.getElementById("strengths");
+const risks = document.getElementById("risks");
+const valueCreation = document.getElementById("valueCreation");
+const facts = document.getElementById("facts");
+const trendLabel = document.getElementById("trendLabel");
+const mainTrend = document.getElementById("mainTrend");
+const trendArea = document.getElementById("trendArea");
+const trendNodes = document.getElementById("trendNodes");
+const radarFill = document.getElementById("radarFill");
+const radarNodes = document.getElementById("radarNodes");
+const shapeLegend = document.getElementById("shapeLegend");
+const experiencePreview = document.getElementById("experiencePreview");
+const experiencePreviewBg = document.getElementById("experiencePreviewBg");
+const experiencePreviewTitle = document.getElementById("experiencePreviewTitle");
+const experiencePreviewLabel = document.getElementById("experiencePreviewLabel");
+const experiencePreviewDesc = document.getElementById("experiencePreviewDesc");
+const experiencePreviewChips = document.getElementById("experiencePreviewChips");
+
+const previewModal = document.getElementById("previewModal");
+const modalClose = document.getElementById("modalClose");
+const modalGo = document.getElementById("modalGo");
+const modalArtBg = document.getElementById("modalArtBg");
+const modalEyebrow = document.getElementById("modalEyebrow");
+const modalVisualTitle = document.getElementById("modalVisualTitle");
+const modalVisualDesc = document.getElementById("modalVisualDesc");
+const modalSideTitle = document.getElementById("modalSideTitle");
+const modalSideText = document.getElementById("modalSideText");
+const modalMetrics = document.getElementById("modalMetrics");
+const referenceTitle = document.getElementById("referenceTitle");
+const referenceGrid = document.getElementById("referenceGrid");
+const refPrev = document.getElementById("refPrev");
+const refNext = document.getElementById("refNext");
+const sortScore = document.getElementById("sortScore");
+const refreshBtn = document.getElementById("refreshBtn");
+const exportBtn = document.getElementById("exportBtn");
+const bannerBg = document.getElementById("bannerBg");
+const bannerStamp = document.getElementById("bannerStamp");
+const csvInput = document.getElementById("csvInput");
+const dataStatus = document.getElementById("dataStatus");
+const tickerItems = document.getElementById("tickerItems");
+const scoreModelLabel = document.getElementById("scoreModelLabel");
+const lockedCount = document.getElementById("lockedCount");
+const resolvedCount = document.getElementById("resolvedCount");
+const accuracyValue = document.getElementById("accuracyValue");
+const baselineValue = document.getElementById("baselineValue");
+
+let modalTarget = "analyzer";
+
+function fmt(n){
+  if(!Number.isFinite(n)) return "—";
+  return n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 1 : 2) + "K" : String(n);
+}
+function riskLabel(r){
+  if(!Number.isFinite(r)) return "—";
+  return r < 35 ? "LOW" : r < 60 ? "MED" : "HIGH";
+}
+function decisionClass(d){
+  return d === "INVESTIGATE" ? "buy" : (d === "WATCH" || d === "PRELIMINARY" || d === "UNSCORED") ? "watch" : "avoid";
+}
+
+function switchView(v){
+  document.querySelectorAll(".view").forEach(view => view.classList.remove("active"));
+  document.getElementById(v + "View").classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(item => item.classList.toggle("active", item.dataset.view === v));
+  pageTitle.innerHTML = `${titles[v]}<span>RIB research prototype</span>`;
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+document.querySelectorAll("[data-view]").forEach(el => {
+  el.addEventListener("click", () => switchView(el.dataset.view));
+});
+
+function renderMarket(){
+  if(!games.length){
+    marketRows.innerHTML='<tr><td colspan="8" style="padding:24px;text-align:center">No RIB data loaded. Use “Load Sheet CSVs” and select exported project tabs.</td></tr>';
+    watchlist.innerHTML='<div class="watch-item"><div><strong>DATASET REQUIRED</strong><span>No synthetic rankings shown</span></div><b>—</b></div>';
+    return;
+  }
+  marketRows.innerHTML = games.map(g => {
+    const scoreText=g.scoreKind==="legacy"?`v1 ${fmtScore(g.score)}`:fmtScore(g.score);
+    return `<tr data-game="${esc(g.name)}"><td><div class="game-cell">
+      <div class="game-thumb" style="background-image:url('${g.visual}')"></div><div>
+      <div class="game-name">${esc(g.name)}</div><div class="game-sub">${esc(g.dev)}</div></div></div></td>
+      <td>${esc(g.genre)}</td><td class="num">${fmt(g.players)}</td>
+      <td class="num ${Number.isFinite(g.growth)?(g.growth>=0?"up":"down"):""}">${fmtPct(g.growth)}</td>
+      <td class="num">${fmtScore(g.eng)}</td><td class="num">${Number.isFinite(g.risk)?`${riskLabel(g.risk)} ${fmtScore(g.risk)}`:"—"}</td>
+      <td class="num"><span class="score-pill" title="${esc(g.scoreLabel)}">${esc(scoreText)}</span></td>
+      <td><span class="decision ${decisionClass(g.decision)}">${esc(g.decision)}</span></td></tr>`;
+  }).join("");
+  document.querySelectorAll("#marketRows tr[data-game]").forEach(row => row.addEventListener("click",()=>{
+    gameSelect.value=row.dataset.game; renderDetail(row.dataset.game); switchView("analyzer");
+  }));
+  watchlist.innerHTML=games.slice().sort((a,b)=>(b.score??-Infinity)-(a.score??-Infinity)).slice(0,4).map(g=>`
+    <div class="watch-item"><div><strong>${esc(g.name)}</strong>
+    <span>${esc(g.genre)} · ${Number.isFinite(g.growth)?fmtPct(g.growth):esc(g.scoreLabel)}</span></div>
+    <b>${g.scoreKind==="legacy"?"v1 ":""}${fmtScore(g.score)}</b></div>`).join("");
+}
+function fillSelects(){
+  [gameSelect,compareA,compareB].forEach(sel=>{
+    sel.innerHTML=games.length?games.map(g=>`<option value="${esc(g.name)}">${esc(g.name)}</option>`).join(""):'<option value="">No data loaded</option>';
+    sel.disabled=!games.length;
+  });
+  if(games.length){ gameSelect.value=games[0].name; compareA.value=games[0].name; compareB.value=games[Math.min(1,games.length-1)].name; }
+}
+function renderBreakdown(g){
+  const rows=Object.entries(g.breakdown).filter(([,v])=>Number.isFinite(v));
+  breakdown.innerHTML=rows.length?rows.map(([k,v])=>`<div class="break-row"><span>${esc(k)}</span>
+    <div class="bar"><div class="fill" style="width:${Math.max(0,Math.min(100,v))}%"></div></div><div class="break-num">${fmtScore(v)}</div></div>`).join("")
+    :'<div style="padding:12px;font-size:10px">No numeric factor scores are available in the imported record.</div>';
+}
+function renderFacts(g){
+  const compact=v=>{ const x=num(v); return Number.isFinite(x)?new Intl.NumberFormat("en",{notation:"compact",maximumFractionDigits:1}).format(x):String(v||"—"); };
+  const info=[["PLAYERS",fmt(g.players)],["30D GROWTH",fmtPct(g.growth)],["VISITS",compact(g.visits)],
+    ["FAVORITES",compact(g.favorites)],["LAST UPDATE",g.updates||"—"],["MONETIZATION",g.monetization||"—"]];
+  facts.innerHTML=info.map(([a,b])=>`<div class="fact"><small>${esc(a)}</small><strong>${esc(b)}</strong></div>`).join("");
+}function renderTrend(g){
+  if(!Number.isFinite(g.growth)){
+    mainTrend.setAttribute("points",""); trendArea.setAttribute("points",""); trendNodes.innerHTML="";
+    trendLabel.textContent="30D growth not established in imported data"; return;
+  }
+  const y0=110, y1=Math.max(28,Math.min(192,110-g.growth*1.35));
+  const pts=[[0,y0],[700,y1]];
+  mainTrend.setAttribute("points",pts.map(p=>p.join(",")).join(" "));
+  trendArea.setAttribute("points",`0,${y0} 700,${y1} 700,220 0,220`);
+  trendNodes.innerHTML=pts.map((p,i)=>`<circle class="chart-point" cx="${p[0]}" cy="${p[1]}" r="${i?6:4.5}"></circle>`).join("")
+    +`<text class="chart-tag" x="620" y="${Math.max(16,y1-12)}">${esc(g.name)}</text>`;
+  trendLabel.textContent=`Imported 30D endpoint · ${fmtPct(g.growth)}`;
+}
+function computeRadarValues(g){
+  return [g.breakdown.Growth,g.breakdown.Engagement,g.breakdown["Market Position"],g.breakdown.Monetization,
+    g.breakdown.Operations,g.breakdown.Opportunity,g.breakdown.Stability,g.riskQuality];
+}
+function renderRadar(g){
+  const vals=computeRadarValues(g), angles=[-90,-45,0,45,90,135,180,225].map(a=>a*Math.PI/180);
+  const cx=110,cy=110,r=84;
+  const pts=vals.map((v,i)=>{ const rr=Number.isFinite(v)?r*(Math.max(0,Math.min(100,v))/100):0; return [cx+rr*Math.cos(angles[i]),cy+rr*Math.sin(angles[i])]; });
+  radarFill.setAttribute("points",pts.map(p=>p.join(",")).join(" "));
+  radarNodes.innerHTML=pts.map((p,i)=>Number.isFinite(vals[i])?`<circle class="radar-node" cx="${p[0]}" cy="${p[1]}" r="4.5"></circle>`:"").join("");
+  const labels=["Growth","Engage","Market","Money","Ops","Upside","Stable","Risk Fit"];
+  shapeLegend.innerHTML=labels.map((name,i)=>{
+    const v=vals[i], width=Number.isFinite(v)?Math.max(0,Math.min(100,v)):0;
+    return `<div class="legend-row"><div class="legend-name">${name}</div>
+      <div class="legend-bar"><div class="legend-fill" style="width:${width}%"></div></div>
+      <div class="legend-num">${Number.isFinite(v)?fmtScore(v):"N/A"}</div></div>`;
+  }).join("");
+}
+function renderDetail(name){
+  const g=games.find(x=>x.name===name);
+  if(!g){
+    detailTitle.textContent="No data loaded"; detailScore.textContent="—"; detailDecision.textContent="UNSCORED";
+    detailDecision.className="decision watch"; scoreModelLabel.textContent="RIB SCORE · DATA"; bannerStamp.textContent="RIB / DATA";
+    strengths.innerHTML="<li>Load exported project CSV files to begin.</li>"; risks.innerHTML="";
+    valueCreation.textContent="No project data loaded."; breakdown.innerHTML=""; facts.innerHTML="";
+    mainTrend.setAttribute("points",""); trendArea.setAttribute("points",""); trendNodes.innerHTML=""; radarFill.setAttribute("points",""); radarNodes.innerHTML=""; shapeLegend.innerHTML="";
+    experiencePreviewTitle.textContent="No experience selected"; experiencePreviewLabel.textContent="RIB DATA · DATASET REQUIRED";
+    experiencePreviewDesc.textContent="Load exported RIB Google Sheets CSV files to populate this analyzer with traceable project data.";
+    experiencePreviewChips.innerHTML=""; return;
+  }
+  detailTitle.textContent=g.name; detailScore.textContent=fmtScore(g.score); detailDecision.textContent=g.decision;
+  detailDecision.className=`decision ${decisionClass(g.decision)}`; scoreModelLabel.textContent=g.scoreLabel;
+  bannerStamp.textContent=`RIB / ${g.scoreKind==="legacy"?"v1":"v2.4"}`;
+  strengths.innerHTML=(g.strengths.length?g.strengths:["No positive-signal narrative imported."]).map(x=>`<li>${esc(x)}</li>`).join("");
+  risks.innerHTML=(g.risks.length?g.risks:["No primary-risk narrative imported."]).map(x=>`<li>${esc(x)}</li>`).join("");
+  valueCreation.textContent=g.value; renderBreakdown(g); renderFacts(g); renderTrend(g); renderRadar(g);
+  experiencePreviewBg.style.backgroundImage=`url("${g.visual}")`; experiencePreviewTitle.textContent=g.name;
+  experiencePreviewLabel.textContent=`${g.scoreLabel} · ${g.date||"DATE N/A"}`;
+  experiencePreviewDesc.textContent=`${g.genre} · ${g.dev}. Imported from the RIB project data system; visual context is linked to the Roblox URL when available.`;
+  const chips=[Number.isFinite(g.score)?`${g.scoreKind==="legacy"?"v1 RIB":"RIB"} ${fmtScore(g.score)}`:"UNSCORED",
+    Number.isFinite(g.growth)?`${fmtPct(g.growth)} 30D`:"30D UNKNOWN",
+    Number.isFinite(g.eng)?`ENG ${fmtScore(g.eng)}`:"ENG N/A",
+    Number.isFinite(g.risk)?`RISK ${fmtScore(g.risk)}`:"RISK N/A"];
+  experiencePreviewChips.innerHTML=chips.map(x=>`<span class="preview-chip">${esc(x)}</span>`).join("");
+}function renderCompare(){
+  const a=games.find(x=>x.name===compareA.value), b=games.find(x=>x.name===compareB.value);
+  if(!a || !b){
+    compareTable.innerHTML='<tr><td>No comparable imported records loaded.</td></tr>';
+    compareVerdict.textContent="Load at least two experience records to compare candidates."; return;
+  }
+  const scoreText=g=>g.scoreKind==="legacy"?`v1 ${fmtScore(g.score)}`:fmtScore(g.score);
+  const rows=[["Experience",a.name,b.name],["RIB Score",scoreText(a),scoreText(b)],["30D Growth",fmtPct(a.growth),fmtPct(b.growth)],
+    ["Engagement",fmtScore(a.eng),fmtScore(b.eng)],["Risk",Number.isFinite(a.risk)?`${riskLabel(a.risk)} ${fmtScore(a.risk)}`:"—",Number.isFinite(b.risk)?`${riskLabel(b.risk)} ${fmtScore(b.risk)}`:"—"],
+    ["Market Position",fmtScore(a.breakdown["Market Position"]),fmtScore(b.breakdown["Market Position"])],
+    ["Monetization",fmtScore(a.breakdown.Monetization),fmtScore(b.breakdown.Monetization)],
+    ["Operations",fmtScore(a.breakdown.Operations),fmtScore(b.breakdown.Operations)],
+    ["Opportunity",fmtScore(a.breakdown.Opportunity),fmtScore(b.breakdown.Opportunity)],
+    ["Stability",fmtScore(a.breakdown.Stability),fmtScore(b.breakdown.Stability)]];
+  compareTable.innerHTML=rows.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join("");
+  if(Number.isFinite(a.score) && Number.isFinite(b.score) && a.scoreKind===b.scoreKind){
+    const hi=a.score>=b.score?a:b, lo=a.score>=b.score?b:a;
+    compareVerdict.textContent=`${hi.name} has the higher imported ${hi.scoreKind==="legacy"?"legacy v1":"v2.4"} screen (${fmtScore(hi.score)} vs ${fmtScore(lo.score)}). That difference is a diligence-prioritization signal, not an acquisition decision.`;
+  } else {
+    compareVerdict.textContent="The imported records do not contain directly comparable current scores. Review the available factors side-by-side without inferring a winner.";
+  }
+}
+function renderPred(){
+  lockedCount.textContent=String(predictions.length);
+  const resolved=predictions.filter(p=>["RESOLVED","CORRECT","MISS"].includes(String(p[5]).toUpperCase()));
+  resolvedCount.textContent=String(resolved.length);
+  const classifiable=predictions.filter(p=>["CORRECT","MISS"].includes(String(p[5]).toUpperCase()));
+  accuracyValue.textContent=classifiable.length?`${Math.round(100*classifiable.filter(p=>String(p[5]).toUpperCase()==="CORRECT").length/classifiable.length)}%`:"—";
+  baselineValue.textContent="—";
+  if(!predictions.length){
+    predRows.innerHTML='<tr><td colspan="6" style="padding:24px;text-align:center">No locked, scored predictions are present in the imported Validation data.</td></tr>'; return;
+  }
+  predRows.innerHTML=predictions.map(p=>`<tr><td>${esc(p[0])}</td><td>${esc(p[1])}</td><td>${esc(p[2])}</td>
+    <td>${esc(p[3])}</td><td>${esc(p[4])}</td><td><span class="status ${String(p[5]).toUpperCase()==="CORRECT"?"good":String(p[5]).toUpperCase()==="OPEN"?"priority":""}">${esc(p[5])}</span></td></tr>`).join("");
+}
+
+function renderSignalBoard(){
+  referenceGrid.className = "reference-grid signal-board";
+  referenceGrid.innerHTML = `
+    <div class="signal-card">
+      <div class="signal-head">
+        <strong>DAILY ACTIVE USERS</strong>
+        <span>OFFICIAL ROBLOX PLATFORM DATA</span>
+      </div>
+      <div class="signal-body">
+        <svg viewBox="0 0 520 160" preserveAspectRatio="none" aria-label="Roblox daily active users chart">
+          <line class="sgrid" x1="0" y1="32" x2="520" y2="32"></line>
+          <line class="sgrid" x1="0" y1="64" x2="520" y2="64"></line>
+          <line class="sgrid" x1="0" y1="96" x2="520" y2="96"></line>
+          <line class="sgrid" x1="0" y1="128" x2="520" y2="128"></line>
+          <polygon class="sarea-red" points="40,124 170,93 300,69 440,26 440,152 40,152"></polygon>
+          <polyline class="sline-red" points="40,124 170,93 300,69 440,26"></polyline>
+          <circle class="spoint-red" cx="40" cy="124" r="5"></circle>
+          <circle class="spoint-red" cx="170" cy="93" r="5"></circle>
+          <circle class="spoint-red" cx="300" cy="69" r="5"></circle>
+          <circle class="spoint-red" cx="440" cy="26" r="6"></circle>
+          <text class="slabel" x="27" y="144">Q2 21</text>
+          <text class="slabel" x="155" y="144">Q3 23</text>
+          <text class="slabel" x="285" y="144">Q4 24</text>
+          <text class="slabel" x="425" y="144">Q2 25</text>
+          <text class="ssmall" x="28" y="116">46.6M</text>
+          <text class="ssmall" x="157" y="85">70.2M</text>
+          <text class="ssmall" x="287" y="61">85.3M</text>
+          <text class="slabel" x="404" y="18">111.8M</text>
+        </svg>
+        <div class="signal-note">Real data points used here come from official Roblox reporting: 46.6M DAU (Q2 2021), 70.2M (Q3 2023), 85.3M (Q4 2024), and 111.8M (Q2 2025).</div>
+      </div>
+    </div>
+
+    <div class="signal-card">
+      <div class="signal-head">
+        <strong>CREATOR ECONOMY SCALE</strong>
+        <span>OFFICIAL ROBLOX PLATFORM DATA</span>
+      </div>
+      <div class="signal-body">
+        <svg viewBox="0 0 520 160" preserveAspectRatio="none" aria-label="Roblox creator earnings chart">
+          <line class="sgrid" x1="0" y1="32" x2="520" y2="32"></line>
+          <line class="sgrid" x1="0" y1="64" x2="520" y2="64"></line>
+          <line class="sgrid" x1="0" y1="96" x2="520" y2="96"></line>
+          <line class="sgrid" x1="0" y1="128" x2="520" y2="128"></line>
+          <rect class="sbar" x="70" y="61" width="72" height="91"></rect>
+          <rect class="sbar" x="220" y="39" width="72" height="113"></rect>
+          <rect class="sbar" x="370" y="19" width="72" height="133"></rect>
+          <text class="slabel" x="84" y="145">2023</text>
+          <text class="slabel" x="233" y="145">2024</text>
+          <text class="slabel" x="364" y="145">PAST YR</text>
+          <text class="ssmall" x="83" y="54">$741M</text>
+          <text class="ssmall" x="233" y="32">$923M</text>
+          <text class="slabel" x="374" y="14">$1B+</text>
+        </svg>
+        <div class="signal-note">This graph shows the creator-economy scale RIB is trying to read. Official Roblox figures reported $741M creator earnings in 2023, $923M in 2024, and over $1B over the past year.</div>
+      </div>
+    </div>
+  `;
+}
+
+function setModalImage(image, title, eyebrow){
+  modalArtBg.style.backgroundImage = `url("${image}")`;
+  modalVisualTitle.textContent = title;
+  modalEyebrow.textContent = eyebrow || "VISUAL REFERENCE";
+}
+
+function setMetricBox(rows){
+  modalMetrics.innerHTML = rows.map(([a,b]) => `
+    <div class="modal-metric">
+      <small>${a}</small>
+      <strong>${b}</strong>
+    </div>
+  `).join("");
+}
+
+function activateRef(index){
+  referenceGrid.querySelectorAll(".reference-tile").forEach((tile,i) => {
+    tile.classList.toggle("active", i === index);
+  });
+}
+
+function renderReferenceItems(items, mode, onPick){
+  referenceGrid.className = "reference-grid" + (mode ? " " + mode : "");
+  referenceGrid.innerHTML = items.map((r,i) => `
+    <button type="button" class="reference-tile" data-ref="${i}">
+      <div class="reference-img" style="background-image:url('${r.image}')"></div>
+      <strong>${r.name}</strong>
+      <span>${r.type}</span>
+      ${r.tags ? `<div class="tag-row">${r.tags.map(tag => `<span class="ref-tag">${tag}</span>`).join("")}</div>` : ""}
+      <small class="reference-note">${r.note || ""}</small>
+    </button>
+  `).join("");
+
+  referenceGrid.querySelectorAll(".reference-tile").forEach(tile => {
+    tile.addEventListener("click", () => {
+      const idx = Number(tile.dataset.ref);
+      activateRef(idx);
+      onPick(items[idx], idx);
+    });
+  });
+  activateRef(0);
+}
+
+function openModal(){
+  previewModal.classList.add("open");
+  previewModal.setAttribute("aria-hidden","false");
+}
+function closeModal(){
+  previewModal.classList.remove("open");
+  previewModal.setAttribute("aria-hidden","true");
+}
+
+function openGameModal(g){
+  if(!g) return;
+  modalTarget = "analyzer";
+  setModalImage(g.visual, g.name, `${g.scoreLabel} · IMPORTED RIB DATA`);
+  modalVisualDesc.textContent = `${g.genre} · ${g.dev}. Metrics shown here come from the imported RIB project records; the image is visual context only.`;
+  modalSideTitle.textContent = "Current RIB Screen";
+  modalSideText.textContent = g.value;
+  setMetricBox([
+    ["RIB SCORE", g.scoreKind === "legacy" ? `v1 ${fmtScore(g.score)}` : fmtScore(g.score)],
+    ["30D GROWTH", fmtPct(g.growth)],
+    ["ENGAGEMENT", fmtScore(g.eng)],
+    ["RISK", fmtScore(g.risk)]
+  ]);
+  referenceTitle.textContent = "RELATED REAL ROBLOX REFERENCES";
+  renderReferenceItems(realReferences, "grid", item => {
+    setModalImage(item.image, item.name, "REAL ROBLOX REFERENCE");
+    modalVisualDesc.textContent = item.note;
+  });
+  openModal();
+}
+
+function openLensModal(lens){
+  if(lens === "market"){
+    modalTarget = "market";
+    setModalImage(breakoutShowcase[0].image, breakoutShowcase[0].name, "BREAKOUT ROBLOX EXPERIENCE");
+    modalVisualDesc.textContent = breakoutShowcase[0].note;
+    modalSideTitle.textContent = "Breakout experiences";
+    modalSideText.textContent = "Scroll through major Roblox hits and breakout-style experiences. This makes the Market Discovery box feel like a real visual scan of the ecosystem.";
+    setMetricBox([
+      ["MODE","DISCOVERY"],
+      ["VIEW","POPULAR"],
+      ["FOCUS","BREAKOUTS"],
+      ["STATUS","SCROLL"]
+    ]);
+    referenceTitle.textContent = "POPULAR / BREAKOUT ROBLOX EXPERIENCES";
+    renderReferenceItems(breakoutShowcase, "market-cards", item => {
+      setModalImage(item.image, item.name, "POPULAR ROBLOX EXPERIENCE");
+      modalVisualDesc.textContent = item.note;
+      modalSideTitle.textContent = "Why it matters";
+      modalSideText.textContent = `${item.name} is included to show the kind of visually strong, culturally relevant Roblox hit that makes early market discovery valuable.`;
+    });
+    openModal();
+    return;
+  }
+
+  if(lens === "research"){
+    modalTarget = "research";
+    setModalImage(studioShowcase[0].image, studioShowcase[0].name, "CREATOR-SIDE WORKFLOW");
+    modalVisualDesc.textContent = studioShowcase[0].note;
+    modalSideTitle.textContent = "Studio / creator side";
+    modalSideText.innerHTML = `${studioShowcase[0].note}<div class="studio-mini"><span class="studio-chip">Build</span><span class="studio-chip">Analyze</span><span class="studio-chip">Benchmark</span><span class="studio-chip">Publish</span></div>`;
+    setMetricBox([
+      ["MODE","CREATOR"],
+      ["VIEW","WORKFLOW"],
+      ["FOCUS","OPERATIONS"],
+      ["STATUS","MULTI-VIEW"]
+    ]);
+    referenceTitle.textContent = "CREATOR-SIDE VIEWS";
+    renderReferenceItems(studioShowcase, "studio-mix", item => {
+      setModalImage(item.image, item.name, "CREATOR-SIDE VIEW");
+      modalVisualDesc.textContent = item.note;
+      modalSideTitle.textContent = "Why this matters";
+      modalSideText.innerHTML = `${item.note}<div class="studio-mini"><span class="studio-chip">Build</span><span class="studio-chip">Analyze</span><span class="studio-chip">Benchmark</span><span class="studio-chip">Publish</span></div>`;
+    });
+    openModal();
+    return;
+  }
+
+  if(lens === "analyzer"){
+    modalTarget = "analyzer";
+    setModalImage("https://prod.docsiteassets.roblox.com/assets/analytics/discovery/Home-Recommendation-Signals.png", "Signal Analysis", "OFFICIAL ROBLOX PLATFORM SIGNALS");
+    modalVisualDesc.textContent = "This lens now opens with actual graphs using official Roblox platform data, so the interaction feels analytical instead of decorative.";
+    modalSideTitle.textContent = "Real-data signal board";
+    modalSideText.textContent = "The charts below use official Roblox metrics to make the Signal Analysis box feel more like a premium research product.";
+    setMetricBox([
+      ["DAU","111.8M"],
+      ["VISITS","390B"],
+      ["CREATOR EARN","$1B+"],
+      ["USERS / MO","21+"]
+    ]);
+    referenceTitle.textContent = "OFFICIAL ROBLOX DATA VISUALS";
+    renderSignalBoard();
+    openModal();
+    return;
+  }
+
+  modalTarget = "compare";
+  setModalImage(realReferences[1].image, "Competitive Context", "RIB LENS 04");
+  modalVisualDesc.textContent = "Candidates make more sense when they are viewed against similar experiences and benchmark strategies.";
+  modalSideTitle.textContent = "Why this visual matters";
+  modalSideText.textContent = "Comparison forces RIB to explain relative strengths instead of calling every growing game attractive.";
+  setMetricBox([
+    ["ROLE","COMPARE"],
+    ["MODE","BENCHMARK"],
+    ["MODEL","RIB v0.1"],
+    ["STATUS","RELATIVE"]
+  ]);
+  referenceTitle.textContent = "COMPARABLE EXPERIENCE REFERENCES";
+  renderReferenceItems(realReferences, "grid", item => {
+    setModalImage(item.image, item.name, "COMPARABLE EXPERIENCE");
+    modalVisualDesc.textContent = item.note;
+  });
+  openModal();
+}
+
+function cycleBanner(){
+  let i = 0;
+  bannerBg.style.backgroundImage = `url("${bannerSlides[0]}")`;
+  setInterval(() => {
+    i = (i + 1) % bannerSlides.length;
+    bannerBg.style.backgroundImage = `url("${bannerSlides[i]}")`;
+  }, 3500);
+}
+
+document.querySelectorAll(".visual-card[data-lens]").forEach(card => {
+  card.addEventListener("click", () => openLensModal(card.dataset.lens));
+});
+
+gameSelect.addEventListener("change", e => renderDetail(e.target.value));
+compareA.addEventListener("change", renderCompare);
+compareB.addEventListener("change", renderCompare);
+
+experiencePreview.addEventListener("click", () => {
+  const g = games.find(x => x.name === gameSelect.value) || games[0];
+  openGameModal(g);
+});
+experiencePreview.addEventListener("keydown", e => {
+  if(e.key === "Enter" || e.key === " "){
+    e.preventDefault();
+    const g = games.find(x => x.name === gameSelect.value) || games[0];
+    openGameModal(g);
+  }
+});
+
+modalClose.addEventListener("click", closeModal);
+previewModal.addEventListener("click", e => {
+  if(e.target === previewModal) closeModal();
+});
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape") closeModal();
+});
+modalGo.addEventListener("click", () => {
+  closeModal();
+  switchView(modalTarget);
+});
+refPrev.addEventListener("click", () => referenceGrid.scrollBy({left:-190, behavior:"smooth"}));
+refNext.addEventListener("click", () => referenceGrid.scrollBy({left:190, behavior:"smooth"}));
+
+sortScore.addEventListener("click", () => {
+  games.sort((a,b) => (b.score ?? -Infinity) - (a.score ?? -Infinity));
+  renderMarket();
+});
+refreshBtn.addEventListener("click", () => csvInput.click());
+csvInput.addEventListener("change", async () => {
+  const files=[...csvInput.files];
+  if(files.length) await importCSVFiles(files);
+  csvInput.value="";
+});
+exportBtn.addEventListener("click", () => {
+  if(!games.length){ dataStatus.textContent="Nothing to export yet. Load RIB Sheet CSV files first."; return; }
+  const rows = [
+    ["Experience","Date","Developer","Genre","CCU","30D Growth","Engagement","Risk","Displayed RIB Score","Score Basis","Decision","Evidence Maturity","Evidence Confidence","Full RIB Eligibility","Model Version"],
+    ...games.map(g => [g.name,g.date,g.dev,g.genre,g.players ?? "",g.growth ?? "",g.eng ?? "",g.risk ?? "",g.score ?? "",g.scoreLabel,g.decision,g.evidenceMaturity,g.confidence,g.eligibility,g.modelVersion])
+  ];
+  const csv=rows.map(r=>r.map(v=>`"${String(v ?? "").replaceAll('"','""')}"`).join(",")).join("\n");
+  const url=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  const a=document.createElement("a"); a.href=url; a.download="rib_dashboard_snapshot.csv"; a.click(); URL.revokeObjectURL(url);
+});
+
+restoreRibState();
+renderAll();
+cycleBanner();
+</script>
+</body>
+</html>
